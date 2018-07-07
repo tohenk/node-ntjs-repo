@@ -58,7 +58,7 @@ $.errhelper = function(container, options) {
         ERROR_ASLIST: 2,
         container: null,
         errorContainer: null,
-        defaultError: this.ERROR_ASLIST,
+        errorFormat: this.ERROR_ASLIST,
         requiredSelector: '.required',
         errClass: null,
         parentSelector: null,
@@ -113,6 +113,7 @@ $.errhelper = function(container, options) {
                     if (typeof self.inplace == 'function') {
                         self.inplace(el, error);
                         self.addErrorClass(el);
+                        self.showError(el);
                     }
                     break;
                 case self.ERROR_ASLIST:
@@ -138,7 +139,7 @@ $.errhelper = function(container, options) {
                 // check if error element is exist
                 if (el.length) {
                     handled = true;
-                    helper.addError(err[1], helper.defaultError == helper.ERROR_ASLIST ? el.parent() : el, helper.defaultError);
+                    helper.addError(err[1], helper.errorFormat == helper.ERROR_ASLIST ? el.parent() : el, helper.errorFormat);
                     if (helper.parentClass) {
                         if (helper.parentSelector) {
                             el.parents(helper.parentSelector).addClass(helper.parentClass).show();
@@ -160,7 +161,7 @@ $.errhelper = function(container, options) {
             if (!handled) {
                 // error message shown in container
                 if (helper.errorContainer) {
-                    helper.addError(err, helper.errorContainer, helper.ERROR_ASLIST);
+                    helper.addError(err, helper.errorContainer, helper.errorFormat);
                 } else {
                     if ($.ntdlg) {
                         $.ntdlg.message('dlgerr', '${err}', err, $.ntdlg.ICON_ERROR);
@@ -205,7 +206,7 @@ $.errhelper = function(container, options) {
     }
     helper.container = container;
     var options = options ? options : {};
-    var props = ['errorContainer', 'defaultError', 'requiredSelector', 'parentSelector', 'parentClass',
+    var props = ['errorContainer', 'errorFormat', 'requiredSelector', 'parentSelector', 'parentClass',
         'errClass', 'listClass', 'toggleClass', 'inplace', 'onErrReset'];
     $.each(props, function(i, v) {
         if (typeof options[v] != 'undefined') {
