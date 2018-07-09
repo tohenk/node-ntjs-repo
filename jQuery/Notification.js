@@ -44,8 +44,10 @@ util.inherits(Script.Notification, jquery.jQuery);
 
 Script.Notification.prototype.initialize = function() {
     this.name = 'Notification';
+    this.asset = new script.Asset('notifyjs');
     this.position = script.Repository.POSITION_FIRST;
     this.addDependencies(['jQuery', 'jQuery/Define']);
+    this.addAsset(script.Asset.JAVASCRIPT, 'notify.min');
 }
 
 Script.Notification.prototype.getScript = function() {
