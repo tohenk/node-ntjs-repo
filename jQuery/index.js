@@ -46,5 +46,18 @@ Script.jQuery.prototype.initialize = function() {
 }
 
 Script.jQuery.prototype.initRepository = function(repository) {
-    repository.wrapper = '(function($) {%s})(jQuery);';
+    repository.wrapper = `
+(function($) {
+    (function loader(f) {
+        if (document.ntloader && !document.ntloader.isScriptLoaded()) {
+            setTimeout(function() {
+                loader(f);
+            }, 100);
+        } else {
+            f($);
+        }
+    })(
+        function($) {%s}
+    );
+})(jQuery);`;
 }
