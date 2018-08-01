@@ -46,6 +46,7 @@ Script.jQuery.prototype.initialize = function() {
 }
 
 Script.jQuery.prototype.initRepository = function(repository) {
+    repository.wrapSize = 2;
     repository.wrapper = `
 (function($) {
     (function loader(f) {
@@ -56,8 +57,7 @@ Script.jQuery.prototype.initRepository = function(repository) {
         } else {
             f($);
         }
-    })(
-        function($) {%s}
-    );
+    })(function($) {%s
+    });
 })(jQuery);`;
 }

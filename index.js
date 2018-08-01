@@ -41,7 +41,7 @@ var Repository = {};
 var Assets = {};
 var Scripts = {};
 
-Script.EOL = '\r\n';
+Script.EOL = '\n';
 Script.CDN = '/js';
 
 Script.create = function(name) {
@@ -108,7 +108,7 @@ Script.clear = function() {
 }
 
 Script.getContent = function() {
-    var result = [];
+    const result = [];
     for (var repo in Repository) {
         var content = Repository[repo].getContent();
         if (content) result.push(content);
@@ -160,26 +160,31 @@ Script.Repository.prototype.add = function(content, position) {
         }
         // add to position
         if (!this.scripts[position]) this.scripts[position] = [];
-        this.scripts[position].push(content);
+        Array.prototype.push.apply(this.scripts[position], content.split(Script.EOL));
     }
     return this;
 }
 
 Script.Repository.prototype.toString = function() {
-    var result = '';
+    const result = [];
     [
         Script.Repository.POSITION_FIRST,
         Script.Repository.POSITION_MIDDLE,
         Script.Repository.POSITION_LAST
     ].forEach((position) => {
         if (this.scripts[position]) {
-            result += this.scripts[position].join(Script.EOL);
+            Array.prototype.push.apply(result, this.scripts[position]);
         }
     });
     if (result.length && this.wrapper && this.wrapper.indexOf('%s') >= 0) {
-        result = util.format(this.wrapper, result);
+        for (var i = 0; i < result.length; i++) {
+            if (result[i].trim() != '') {
+                result[i] = ' '.repeat(this.wrapSize * 4) + result[i];
+            }
+        }
+        return util.format(this.wrapper, result.join(Script.EOL));
     }
-    return result;
+    return result.join(Script.EOL);
 }
 
 Script.Repository.prototype.getContent = function() {
