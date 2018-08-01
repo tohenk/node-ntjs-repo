@@ -60,8 +60,15 @@ $.loader = function(container, options) {
             var page = page || self.page || 1;
             self.page = page;
             $.get(self.url.replace(/PAGE/, page)).then(function(json) {
-                if (json.items) self.add(json.items);
-                if (json.pages && json.pages.length) self.buildNav(json.pages);
+                if (json.items) {
+                    self.add(json.items);
+                    if (typeof json.count !== 'undefined') {
+                        self.buildInfo(json.items, json.count);
+                    }
+                }
+                if (json.pages && json.pages.length) {
+                    self.buildNav(json.pages);
+                }
                 if (typeof options.loaded == 'function') {
                     options.loaded.call(self, json);
                 }
@@ -78,6 +85,27 @@ $.loader = function(container, options) {
                 var row = options.formatRow.call(self, item);
                 row.appendTo(tbody);
             });
+        },
+        buildInfo: function(items, count) {
+            var self = this;
+            var title = self.container.siblings('.x-title');
+            if (title.length) {
+                switch (count) {
+                    case 0:
+                        title.html('No result');
+                        break;
+                    case 1:
+                        title.html('Showing one result');
+                        break;
+                    default:
+                        title.html($.util.template('Showing result from %FIRST% to %LAST% of %COUNT%', {
+                            FIRST: items[0].nr,
+                            LAST: items[items.length - 1].nr,
+                            COUNT: count
+                        }));
+                        break;
+                }
+            }
         },
         buildNav: function(items) {
             var self = this;
