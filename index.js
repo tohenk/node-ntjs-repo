@@ -417,4 +417,19 @@ Script.Script.prototype.add = function(script, position) {
     return this;
 }
 
+Script.Script.prototype.addFirst = function(script) {
+    this.add(script, Script.Repository.POSITION_FIRST);
+    return this;
+}
+
+Script.Script.prototype.addMiddle = function(script) {
+    this.add(script, Script.Repository.POSITION_MIDDLE);
+    return this;
+}
+
+Script.Script.prototype.addLast = function(script) {
+    this.add(script, Script.Repository.POSITION_LAST);
+    return this;
+}
+
 Script.addDir(__dirname);
