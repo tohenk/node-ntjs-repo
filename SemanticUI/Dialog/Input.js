@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2020 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,34 +22,22 @@
  * SOFTWARE.
  */
 
+const { ScriptRepository } = require('./../../index');
+const Dialog = require('./index');
+
 /**
- * Input script repository for SemanticUI.
+ * SemanticUI/Dialog/Input script repository.
  */
+class Input extends Dialog {
 
-const Script = module.exports = exports;
+    initialize() {
+        this.name = 'Input';
+        this.position = ScriptRepository.POSITION_FIRST;
+        this.addDependencies(['SemanticUI/Dialog']);
+    }
 
-const util = require('util');
-const script = require('./../../index');
-const dialog = require('./index');
-
-Script.instance = function() {
-    return new this.Input();
-}
-
-Script.Input = function() {
-    dialog.Dialog.call(this);
-}
-
-util.inherits(Script.Input, dialog.Dialog);
-
-Script.Input.prototype.initialize = function() {
-    this.name = 'Input';
-    this.position = script.Repository.POSITION_FIRST;
-    this.addDependencies(['SemanticUI/Dialog']);
-}
-
-Script.Input.prototype.getScript = function() {
-    return `
+    getScript() {
+        return `
 $.define('ntdlg', {
     input: function(id, title, message, value, icon, callback) {
         if (typeof icon == 'function') {
@@ -82,4 +70,12 @@ $.define('ntdlg', {
     }
 }, true);
 `;
+    }
+
+    static instance() {
+        return new this();
+    }
+
 }
+
+module.exports = Input;

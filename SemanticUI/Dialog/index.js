@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2020 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,34 +22,22 @@
  * SOFTWARE.
  */
 
+const { ScriptRepository } = require('./../../index');
+const SemanticUI = require('./../index');
+
 /**
- * Dialog script repository for SemanticUI.
+ * SemanticUI/Dialog script repository.
  */
+class Dialog extends SemanticUI {
 
-const Script = module.exports = exports;
+    initialize() {
+        this.name = 'Dialog';
+        this.position = ScriptRepository.POSITION_FIRST;
+        this.addDependencies(['SemanticUI', 'JQuery/Define', 'JQuery/Util']);
+    }
 
-const util = require('util');
-const script = require('./../../index');
-const semantic = require('./../index');
-
-Script.instance = function() {
-    return new this.Dialog();
-}
-
-Script.Dialog = function() {
-    semantic.SemanticUI.call(this);
-}
-
-util.inherits(Script.Dialog, semantic.SemanticUI);
-
-Script.Dialog.prototype.initialize = function() {
-    this.name = 'Dialog';
-    this.position = script.Repository.POSITION_FIRST;
-    this.addDependencies(['SemanticUI', 'jQuery/Define', 'jQuery/Util']);
-}
-
-Script.Dialog.prototype.getScript = function() {
-    return `
+    getScript() {
+        return `
 $.define('ntdlg', {
     ICON_INFO: 'info circle icon',
     ICON_ALERT: 'yellow exclamation circle icon',
@@ -228,4 +216,11 @@ $.define('ntdlg', {
     }
 }, true);
 `;
+    }
+
+    static instance() {
+        return new this();
+    }
 }
+
+module.exports = Dialog;

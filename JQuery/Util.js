@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2020 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,34 +22,22 @@
  * SOFTWARE.
  */
 
+const { ScriptRepository } = require('./../index');
+const JQuery = require('./index');
+
 /**
- * Util script repository.
+ * JQuery/Util script repository.
  */
+class Util extends JQuery {
 
-const Script = module.exports = exports;
-
-const util = require('util');
-const script = require('./../index');
-const jquery = require('./index');
-
-Script.instance = function() {
-    return new this.Util();
-}
-
-Script.Util = function() {
-    jquery.jQuery.call(this);
-}
-
-util.inherits(Script.Util, jquery.jQuery);
-
-Script.Util.prototype.initialize = function() {
-    this.name = 'Util';
-    this.position = script.Repository.POSITION_FIRST;
-    this.addDependencies(['jQuery', 'jQuery/Define']);
-}
-
-Script.Util.prototype.getScript = function() {
-    return `
+    initialize() {
+        this.name = 'Util';
+        this.position = ScriptRepository.POSITION_FIRST;
+        this.addDependencies(['JQuery', 'JQuery/Define']);
+    }
+    
+    getScript() {
+        return `
 $.define('util', {
     template: function(tmpl, replaces) {
         for (var n in replaces) {
@@ -112,4 +100,12 @@ $.define('util', {
     }
 });
 `;
+    }
+
+    static instance() {
+        return new this();
+    }
+
 }
+
+module.exports = Util;

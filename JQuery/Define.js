@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2020 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,34 +22,22 @@
  * SOFTWARE.
  */
 
+const { ScriptRepository } = require('../index');
+const JQuery = require('./index');
+
 /**
- * Define script repository.
+ * JQuery/Define script repository.
  */
+class Define extends JQuery {
 
-const Script = module.exports = exports;
+    initialize() {
+        this.name = 'Define';
+        this.position = ScriptRepository.POSITION_FIRST;
+        this.addDependencies(['JQuery']);
+    }
 
-const util = require('util');
-const script = require('./../index');
-const jquery = require('./index');
-
-Script.instance = function() {
-    return new this.Define();
-}
-
-Script.Define = function() {
-    jquery.jQuery.call(this);
-}
-
-util.inherits(Script.Define, jquery.jQuery);
-
-Script.Define.prototype.initialize = function() {
-    this.name = 'Define';
-    this.position = script.Repository.POSITION_FIRST;
-    this.addDependencies(['jQuery']);
-}
-
-Script.Define.prototype.getScript = function() {
-    return `
+    getScript() {
+        return `
 if (!$.define) {
     'use strict';
     $.namespace = {
@@ -81,4 +69,12 @@ if (!$.define) {
     $.define = $.namespace.define;
 }
 `;
+    }
+
+    static instance() {
+        return new this();
+    }
+
 }
+
+module.exports = Define;

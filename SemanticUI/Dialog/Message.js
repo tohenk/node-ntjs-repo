@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2020 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -26,30 +26,19 @@
  * Message script repository for SemanticUI.
  */
 
-const Script = module.exports = exports;
+const { ScriptRepository } = require('./../../index');
+const Dialog = require('./index');
 
-const util = require('util');
-const script = require('./../../index');
-const dialog = require('./index');
+class Message extends Dialog {
 
-Script.instance = function() {
-    return new this.Message();
-}
+    initialize() {
+        this.name = 'Message';
+        this.position = ScriptRepository.POSITION_FIRST;
+        this.addDependencies(['SemanticUI/Dialog']);
+    }
 
-Script.Message = function() {
-    dialog.Dialog.call(this);
-}
-
-util.inherits(Script.Message, dialog.Dialog);
-
-Script.Message.prototype.initialize = function() {
-    this.name = 'Message';
-    this.position = script.Repository.POSITION_FIRST;
-    this.addDependencies(['SemanticUI/Dialog']);
-}
-
-Script.Message.prototype.getScript = function() {
-    return `
+    getScript() {
+        return `
 $.define('ntdlg', {
     message: function(id, title, message, icon, cb) {
         return $.ntdlg.dialog(id, title, message, icon, {
@@ -61,4 +50,12 @@ $.define('ntdlg', {
     }
 }, true);
 `;
+    }
+
+    static instance() {
+        return new this();
+    }
+
 }
+
+module.exports = Message;

@@ -22,35 +22,23 @@
  * SOFTWARE.
  */
 
+const { ScriptRepository } = require('./../index');
+const JQuery = require('./index');
+
 /**
- * ErrorHelper script repository.
+ * JQuery/ErrorHelper script repository.
  */
+class ErrorHelper extends JQuery {
 
-const Script = module.exports = exports;
+    initialize() {
+        this.name = 'ErrorHelper';
+        this.position = ScriptRepository.POSITION_FIRST;
+        this.addDependencies(['JQuery']);
+    }
 
-const util = require('util');
-const script = require('./../index');
-const jquery = require('./index');
-
-Script.instance = function() {
-    return new this.ErrorHelper();
-}
-
-Script.ErrorHelper = function() {
-    jquery.jQuery.call(this);
-}
-
-util.inherits(Script.ErrorHelper, jquery.jQuery);
-
-Script.ErrorHelper.prototype.initialize = function() {
-    this.name = 'ErrorHelper';
-    this.position = script.Repository.POSITION_FIRST;
-    this.addDependencies(['jQuery']);
-}
-
-Script.ErrorHelper.prototype.getScript = function() {
-    var err = 'Error';
-    return `
+    getScript() {
+        const err = 'Error';
+        return `
 $.errhelper = function(container, options) {
     var helper = {
         ERROR_REPLACE: 0,
@@ -219,4 +207,12 @@ $.errhelper = function(container, options) {
     return helper;
 }
 `;
+    }
+
+    static instance() {
+        return new this();
+    }
+
 }
+
+module.exports = ErrorHelper;

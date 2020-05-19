@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2020 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,37 +22,25 @@
  * SOFTWARE.
  */
 
+const { ScriptRepository } = require('./../index');
+const JQuery = require('./index');
+
 /**
- * FormPost script repository.
+ * JQuery/FormPost script repository.
  */
+class FormPost extends JQuery {
 
-const Script = module.exports = exports;
+    initialize() {
+        this.name = 'FormPost';
+        this.position = ScriptRepository.POSITION_FIRST;
+        this.addDependencies(['JQuery', 'JQuery/ErrorHelper']);
+    }
 
-const util = require('util');
-const script = require('./../index');
-const jquery = require('./index');
-
-Script.instance = function() {
-    return new this.FormPost();
-}
-
-Script.FormPost = function() {
-    jquery.jQuery.call(this);
-}
-
-util.inherits(Script.FormPost, jquery.jQuery);
-
-Script.FormPost.prototype.initialize = function() {
-    this.name = 'FormPost';
-    this.position = script.Repository.POSITION_FIRST;
-    this.addDependencies(['jQuery', 'jQuery/ErrorHelper']);
-}
-
-Script.FormPost.prototype.getScript = function() {
-    var title = 'Form saved';
-    var error = 'Error';
-    var message = 'Please wait while changes are being submitted.';
-    return `
+    getScript() {
+        const title = 'Form saved';
+        const error = 'Error';
+        const message = 'Please wait while changes are being submitted.';
+        return `
 $.formpost = function(form, options) {
     var fp = {
         errhelper: null,
@@ -255,4 +243,12 @@ $.formpost = function(form, options) {
     return fp;
 }
 `;
+    }
+
+    static instance() {
+        return new this();
+    }
+
 }
+
+module.exports = FormPost;

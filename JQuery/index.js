@@ -22,32 +22,24 @@
  * SOFTWARE.
  */
 
+const { Script, ScriptAsset } = require('../index');
+
 /**
  * JQuery script repository.
  */
+class JQuery extends Script {
 
-const Script = module.exports = exports;
+    constructor() {
+        super('JQuery', 'jquery');
+    }
 
-const util = require('util');
-const script = require('./../index');
+    initialize() {
+        this.addAsset(ScriptAsset.JAVASCRIPT, 'jquery.min');
+    }
 
-Script.instance = function() {
-    return new this.jQuery();
-}
-
-Script.jQuery = function() {
-    script.Script.call(this, 'jQuery', 'jquery');
-}
-
-util.inherits(Script.jQuery, script.Script);
-
-Script.jQuery.prototype.initialize = function() {
-    this.addAsset(script.Asset.JAVASCRIPT, 'jquery.min');
-}
-
-Script.jQuery.prototype.initRepository = function(repository) {
-    repository.wrapSize = 2;
-    repository.wrapper = `
+    initRepository(repository) {
+        repository.wrapSize = 2;
+        repository.wrapper = `
 (function($) {
     (function loader(f) {
         if (document.ntloader && !document.ntloader.isScriptLoaded()) {
@@ -60,4 +52,12 @@ Script.jQuery.prototype.initRepository = function(repository) {
     })(function($) {%s
     });
 })(jQuery);`;
+    }
+
+    static instance() {
+        return new this();
+    }
+
 }
+
+module.exports = JQuery;

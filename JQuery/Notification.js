@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2020 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,37 +22,25 @@
  * SOFTWARE.
  */
 
+const { ScriptRepository, ScriptAsset } = require('./../index');
+const JQuery = require('./index');
+
 /**
- * Notification script repository.
+ * JQuery/Notification script repository.
  */
+class Notification extends JQuery {
 
-const Script = module.exports = exports;
+    initialize() {
+        this.name = 'Notification';
+        this.asset = new ScriptAsset('notifyjs');
+        this.position = ScriptRepository.POSITION_FIRST;
+        this.addDependencies(['JQuery', 'JQuery/Define']);
+        this.addAsset(ScriptAsset.JAVASCRIPT, 'notify.min');
+    }
 
-const util   = require('util');
-const script = require('./../index');
-const jquery = require('./index');
-
-Script.instance = function() {
-    return new this.Notification();
-}
-
-Script.Notification = function() {
-    jquery.jQuery.call(this);
-}
-
-util.inherits(Script.Notification, jquery.jQuery);
-
-Script.Notification.prototype.initialize = function() {
-    this.name = 'Notification';
-    this.asset = new script.Asset('notifyjs');
-    this.position = script.Repository.POSITION_FIRST;
-    this.addDependencies(['jQuery', 'jQuery/Define']);
-    this.addAsset(script.Asset.JAVASCRIPT, 'notify.min');
-}
-
-Script.Notification.prototype.getScript = function() {
-    var title = 'Notification';
-    return `
+    getScript() {
+        const title = 'Notification';
+        return `
 $.define('ntfy', {
     supported: function() {
         var self = this;
@@ -118,4 +106,12 @@ $.define('ntfy', {
 // ask for notification permission
 $.ntfy.supported();
 `;
+    }
+
+    static instance() {
+        return new this();
+    }
+
 }
+
+module.exports = Notification;

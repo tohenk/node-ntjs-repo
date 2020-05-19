@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2020 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,34 +22,22 @@
  * SOFTWARE.
  */
 
+const { ScriptRepository } = require('./../index');
+const SemanticUI = require('./index');
+
 /**
- * Data loader script repository.
+ * SemanticUI/Loader script repository.
  */
+class Loader extends SemanticUI {
 
-const Script = module.exports = exports;
+    initialize() {
+        this.name = 'Loader';
+        this.position = ScriptRepository.POSITION_MIDDLE;
+        this.addDependencies(['SemanticUI', 'JQuery/Util']);
+    }
 
-const util = require('util');
-const script = require('./../index');
-const semantic = require('./index');
-
-Script.instance = function() {
-    return new this.Loader();
-}
-
-Script.Loader = function() {
-    semantic.SemanticUI.call(this);
-}
-
-util.inherits(Script.Loader, semantic.SemanticUI);
-
-Script.Loader.prototype.initialize = function() {
-    this.name = 'Loader';
-    this.position = script.Repository.POSITION_MIDDLE;
-    this.addDependencies(['SemanticUI', 'jQuery/Util']);
-}
-
-Script.Loader.prototype.getScript = function() {
-    return `
+    getScript() {
+        return `
 $.loader = function(container, options) {
     var loader = {
         container: container,
@@ -129,8 +117,8 @@ $.loader = function(container, options) {
                 self.column = self.container.find('thead tr th').length;
             }
             $('<tr><th colspan="' + self.column + '">' +
-              '<div class="ui right floated pagination menu">' + menus.join('') +
-              '</div></th></tr>').appendTo(tfoot);
+                '<div class="ui right floated pagination menu">' + menus.join('') +
+                '</div></th></tr>').appendTo(tfoot);
             tfoot.find('a.item').on('click', function(e) {
                 e.preventDefault();
                 var page = parseInt($(this).attr('data-page'));
@@ -172,4 +160,12 @@ $.loader = function(container, options) {
     return loader;
 }
 `;
+    }
+
+    static instance() {
+        return new this();
+    }
+    
 }
+
+module.exports = Loader;

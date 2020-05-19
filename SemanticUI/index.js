@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2020 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,30 +22,26 @@
  * SOFTWARE.
  */
 
+const { ScriptAsset } = require('./../index');
+const JQuery = require('./../JQuery');
+
 /**
- * Semantic UI script repository.
+ * SemanticUI script repository.
  */
+class SemanticUI extends JQuery {
 
-const Script = module.exports = exports;
+    initialize() {
+        this.name = 'SemanticUI';
+        this.dependencies = ['JQuery'];
+        this.asset = new ScriptAsset('semantic-ui');
+        this.addAsset(ScriptAsset.JAVASCRIPT, 'semantic.min');
+        this.addAsset(ScriptAsset.STYLESHEET, 'semantic.min');
+    }
 
-const util = require('util');
-const script = require('./../index');
-const jquery = require('./../jQuery');
+    static instance() {
+        return new this();
+    }
 
-Script.instance = function() {
-    return new this.SemanticUI();
 }
 
-Script.SemanticUI = function() {
-    jquery.jQuery.call(this);
-}
-
-util.inherits(Script.SemanticUI, jquery.jQuery);
-
-Script.SemanticUI.prototype.initialize = function() {
-    this.name = 'SemanticUI';
-    this.dependencies = ['jQuery'];
-    this.asset = new script.Asset('semantic-ui');
-    this.addAsset(script.Asset.JAVASCRIPT, 'semantic.min');
-    this.addAsset(script.Asset.STYLESHEET, 'semantic.min');
-}
+module.exports = SemanticUI;

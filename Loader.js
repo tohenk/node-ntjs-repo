@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2020 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,27 +22,19 @@
  * SOFTWARE.
  */
 
+const { Script } = require('./index');
+
 /**
  * Javascript XHR loader.
  */
+class Loader extends Script {
 
-const Script = module.exports = exports;
+    constructor() {
+        super('Loader');
+    }
 
-const util = require('util');
-const script = require('./index');
-
-Script.instance = function() {
-    return new this.Loader();
-}
-
-Script.Loader = function() {
-    script.Script.call(this, 'Loader');
-}
-
-util.inherits(Script.Loader, script.Script);
-
-Script.Loader.prototype.getScript = function() {
-    return `
+    getScript() {
+        return `
 if (!document.ntloader) {
     document.ntloader = {
         parent: document.head ? document.head : document.body,
@@ -160,4 +152,12 @@ if (!document.ntloader) {
     }
 }
 `;
+    }
+
+    static instance() {
+        return new this();
+    }
+
 }
+
+module.exports = Loader;

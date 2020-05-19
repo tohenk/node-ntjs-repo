@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2020 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,34 +22,22 @@
  * SOFTWARE.
  */
 
+const { ScriptRepository } = require('./../../index');
+const Dialog = require('./index');
+
 /**
- * Wait script repository for SemanticUI.
+ * SemanticUI/Dialog/Wait script repository.
  */
+class Wait extends Dialog {
 
-const Script = module.exports = exports;
+    initialize() {
+        this.name = 'Wait';
+        this.position = ScriptRepository.POSITION_FIRST;
+        this.addDependencies(['SemanticUI/Dialog']);
+    }
 
-const util = require('util');
-const script = require('./../../index');
-const dialog = require('./index');
-
-Script.instance = function() {
-    return new this.Wait();
-}
-
-Script.Wait = function() {
-    dialog.Dialog.call(this);
-}
-
-util.inherits(Script.Wait, dialog.Dialog);
-
-Script.Wait.prototype.initialize = function() {
-    this.name = 'Wait';
-    this.position = script.Repository.POSITION_FIRST;
-    this.addDependencies(['SemanticUI/Dialog']);
-}
-
-Script.Wait.prototype.getScript = function() {
-    return `
+    getScript() {
+        return `
 $.define('ntdlg', {
     waitId: 'wdlg',
     waitDlg: null,
@@ -77,4 +65,12 @@ $.define('ntdlg', {
     }
 }, true);
 `;
+    }
+
+    static instance() {
+        return new this();
+    }
+
 }
+
+module.exports = Wait;

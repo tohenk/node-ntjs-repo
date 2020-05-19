@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2020 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,27 +22,23 @@
  * SOFTWARE.
  */
 
+const { Script, ScriptAsset } = require('./../index');
+
 /**
  * SocketIO script repository.
  */
+class SocketIO extends Script {
 
-const Script = module.exports = exports;
+    initialize() {
+        this.name = 'SocketIO';
+        this.asset = new ScriptAsset('socket.io');
+        this.addAsset(ScriptAsset.JAVASCRIPT, 'socket.io.slim');
+    }
 
-const util = require('util');
-const script = require('./../index');
+    static instance() {
+        return new this();
+    }
 
-Script.instance = function() {
-    return new this.SocketIO();
 }
 
-Script.SocketIO = function() {
-    script.Script.call(this);
-}
-
-util.inherits(Script.SocketIO, script.Script);
-
-Script.SocketIO.prototype.initialize = function() {
-    this.name = 'SocketIO';
-    this.asset = new script.Asset('socket.io');
-    this.addAsset(script.Asset.JAVASCRIPT, 'socket.io.slim');
-}
+module.exports = SocketIO;
