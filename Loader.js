@@ -143,7 +143,12 @@ if (!document.ntloader) {
                 }
             }
             if (assets.js) {
-                this.scriptQueue = this.loadJavascripts(assets.js);
+                var js = this.loadJavascripts(assets.js);
+                for (var i = 0; i < js.length; i++) {
+                    if (this.scriptQueue.indexOf(js[i]) < 0) {
+                        this.scriptQueue.push(js[i]);
+                    }
+                }
                 if (this.scriptQueue.length) {
                     this.processJavascriptQueue();
                 }
