@@ -32,7 +32,7 @@ class SocketIO extends Script {
     initialize() {
         this.name = 'SocketIO';
         this.asset = new ScriptAsset('socket.io');
-        this.addAsset(ScriptAsset.JAVASCRIPT, 'socket.io.slim');
+        this.addAsset(ScriptAsset.JAVASCRIPT, 'socket.io.min');
     }
 
     static instance() {
