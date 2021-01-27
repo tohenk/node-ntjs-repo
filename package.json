@@ -1,0 +1,27 @@
+{
+  "name": "@ntlab/ntjs",
+  "version": "1.0.0",
+  "description": "Node Javascript repository",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tohenk/node-ntjs.git"
+  },
+  "keywords": [
+    "ntjs",
+    "javascript",
+    "repository"
+  ],
+  "author": "Toha <tohenk@yahoo.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tohenk/node-ntjs/issues"
+  },
+  "homepage": "https://github.com/tohenk/node-ntjs#readme",
+  "dependencies": {
+    "debug": "^4.3.1"
+  }
+}

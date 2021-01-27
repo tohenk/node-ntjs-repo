@@ -10,7 +10,7 @@ ES6 class, or write directly in the javascript code, even on template.
 JQuery and SemanticUI/FomanticUI
 --------------------------------
 
-Support for popular javascript like JQuery, SemanticUI/FomaticUI.
+Support for popular javascript like JQuery, SemanticUI/FomanticUI.
 
 Example Usage
 -------------
