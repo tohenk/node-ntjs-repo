@@ -12,6 +12,30 @@ JQuery and SemanticUI/FomanticUI
 
 Support for popular javascript like JQuery, SemanticUI/FomanticUI.
 
+Using external CDN
+------------------
+
+An external CDN is also supported, simply pass CDN parameters to ScriptManager
+```js
+const { ScriptManager } = require('@ntlab/ntjs');
+
+const cdn = {
+    jquery: {
+        version: '3.5.1',
+        url: 'https://code.jquery.com/%NAME%',
+        js: {
+            jquery: 'jquery-%VER%',
+            'jquery.min': 'jquery-%VER%.min'
+        }
+    },
+    'semantic-ui': {
+        version: '2.8.7',
+        url: 'https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/%VER%/%NAME%'
+    }
+}
+ScriptManager.parseCdn(cdn);
+```
+
 Example Usage
 -------------
 
@@ -20,5 +44,4 @@ See usage example in [NODE-EXPRESS-MIDDLEWARE](https://github.com/tohenk/node-ex
 TODO
 ----
 
-* CDN is not yet supported.
 * Script output minifying is not yet supported.

@@ -44,11 +44,12 @@ class ScriptManager {
     repositories = {}
     assets = {}
     scripts = {}
+    cdns = {}
 
     /**
      * Create script instance or return one if its already created.
      *
-     * @param {String} name Script name
+     * @param {string} name Script name
      * @returns {Script}
      */
     create(name) {
@@ -85,42 +86,116 @@ class ScriptManager {
     }
 
     /**
+     * Add CDN repository.
+     *
+     * @param {string} repository
+     * @returns {CDN}
+     */
+    addCdn(repository) {
+        if (!this.cdns[repository]) {
+            this.cdns[repository] = new CDN(repository);
+        }
+        return this.cdns[repository];
+    }
+
+    /**
+     * Get CDN repository.
+     *
+     * @param {string} repository Repository name
+     * @returns {CDN}
+     */
+    getCdn(repository) {
+        if (this.cdns[repository]) {
+            return this.cdns[repository];
+        }
+    }
+
+    /**
+     * Parse and register CDN.
+     *
+     * @param {Object} cdns CDN parameters
+     * @returns {ScriptManager}
+     */
+    parseCdn(cdns) {
+        Object.keys(cdns).forEach((repository) => {
+            let parameters = cdns[repository];
+            let enabled = true;
+            if (typeof parameters.disabled != 'undefined' && parameters.disabled) {
+                enabled = false;
+            }
+            if (enabled) {
+                let cdn = this.addCdn(repository);
+                if (parameters.url) cdn.url = parameters.url;
+                if (parameters.version) cdn.version = parameters.version;
+                [ScriptAsset.JAVASCRIPT, ScriptAsset.STYLESHEET].forEach((asset) => {
+                    if (parameters.paths && parameters.paths[asset]) {
+                        cdn.setPath(asset, parameters.paths[asset]);
+                    }
+                    if (parameters[asset]) {
+                        let assets = parameters[asset];
+                        Object.keys(assets).forEach((name) => {
+                            switch (asset) {
+                                case ScriptAsset.JAVASCRIPT:
+                                    cdn.addJs(name, assets[name]);
+                                    break;
+                                case ScriptAsset.STYLESHEET:
+                                    cdn.addCss(name, assets[name]);
+                                    break;
+                            }
+                        });
+                    }
+                });
+                debug('CDN parsed: %s', JSON.stringify(cdn));
+            }
+        });
+        return this;
+    }
+
+    /**
      * Register script directory which script will be looked up.
      *
-     * @param {String} path 
+     * @param {string} path Path name
+     * @returns {ScriptManager}
      */
     addDir(path) {
         if (this.dirs.indexOf(path) < 0) {
             this.dirs.push(path);
         }
+        return this;
     }
 
     /**
      * Add default script to include.
      *
-     * @param {String} name Script name
+     * @param {string} name Script name
+     * @returns {ScriptManager}
      */
     addDefault(name) {
         if (this.defaultScripts.indexOf(name) < 0) {
             this.defaultScripts.push(name);
         }
+        return this;
     }
 
     /**
      * Include all default scripts.
+     *
+     * @returns {ScriptManager}
      */
     includeDefaults() {
         this.defaultScripts.forEach((script) => {
             this.create(script).include();
-        })
+        });
+        return this;
     }
 
     /**
      * Add an asset.
      *
-     * @param {String} type Asset type
-     * @param {String} name Asset name
+     * @param {string} type Asset type
+     * @param {string} name Asset name
      * @param {ScriptAsset} asset Asset data
+     * @returns {ScriptManager}
      */
     addAsset(type, name, asset) {
         if (!asset) asset = this.globalAsset();
@@ -129,30 +204,37 @@ class ScriptManager {
             type: type,
             name: name
         });
+        return this;
     }
 
     /**
      * Include all assets.
+     *
+     * @returns {ScriptManager}
      */
     includeAssets() {
         this.defaultAssets.forEach((data) => {
             data.asset.use(data.type, data.name);
-        })
+        });
+        return this;
     }
 
     /**
      * Clear all assets, repositories, and scripts.
+     *
+     * @returns {ScriptManager}
      */
     clear() {
         this.repositories = {};
         this.assets = {};
         this.scripts = {};
+        return this;
     }
 
     /**
      * Get all script content.
      *
-     * @returns {String} Content
+     * @returns {string} Content
      */
     getContent() {
         const result = [];
@@ -266,10 +348,18 @@ class ScriptRepository {
  */
 class ScriptAsset {
 
+    name = null
+    alias = null
+    paths = {}
+    cdn = true
+
     constructor(name) {
         this.name = name;
-        this.paths = {};
-        this.cdn = true;
+    }
+
+    setAlias(alias) {
+        this.alias = alias;
+        return this;
     }
 
     setPath(type, path) {
@@ -331,16 +421,25 @@ class ScriptAsset {
     }
 
     generate(asset, type) {
+        let result;
         if (this.isLocal(asset)) {
-            let result = [];
-            let dir = this.getDir(type);
-            if (this.cdn) result.push(ScriptManager.singleton().CDN);
-            if (dir) result.push(dir);
-            result.push(asset);
-            asset = result.join('/');
-            if ('/' != asset.substr(0, 1)) asset = '/' + asset;
+            let cdn = ScriptManager.singleton().getCdn(this.alias ? this.alias : this.name);
+            if (cdn) {
+                result = cdn.get(type, asset, this.getPath(type));
+            }
+            if (!result) {
+                let p = [];
+                let dir = this.getDir(type);
+                if (this.cdn) p.push(ScriptManager.singleton().CDN);
+                if (dir) p.push(dir);
+                p.push(asset);
+                result = p.join('/');
+                if ('/' != result.substr(0, 1)) result = '/' + result;
+            }
+        } else {
+            result = asset;
         }
-        const generated = this.fixExtension(asset, type);
+        const generated = this.fixExtension(result, type);
         debug(`Generate asset ${asset} = ${generated}`);
         return generated;
     }
@@ -357,6 +456,139 @@ class ScriptAsset {
 
     static get PRIORITY_FIRST()   { return 2 }
     static get PRIORITY_DEFAULT() { return 1 }
+}
+
+/**
+ * A CDN mapping for script assets.
+ */
+class CDN {
+
+    repository = null
+    url = null
+    version = null
+    paths = {}
+    js = {}
+    css = {}
+
+    /**
+     * Constructor.
+     *
+     * @param {string} repository Repository name
+     */
+    constructor(repository) {
+        this.repository = repository;
+    }
+
+    /**
+     * Set asset path.
+     *
+     * @param {string} asset Asset name
+     * @param {string} path Asset path
+     * @returns {CDN}
+     */
+    setPath(asset, path) {
+        this.paths[asset] = path;
+        return this;
+    }
+
+    /**
+     * Get asset path.
+     *
+     * @param {string} asset Asset name
+     * @returns {string}
+     */
+    getPath(asset) {
+        if (this.paths[asset]) {
+            return this.paths[asset];
+        }
+    }
+
+    /**
+     * Add javascript asset.
+     *
+     * @param {string} name Javascript name
+     * @param {string} path Javascript path
+     * @returns {CDN}
+     */
+    addJs(name, path) {
+        this.js[name] = path;
+        return this;
+    }
+
+    /**
+     * Get javascript asset.
+     *
+     * @param {string} name JAvascript name
+     * @returns {string}
+     */
+    getJs(name) {
+        if (this.js[name]) {
+            return this.js[name];
+        }
+    }
+
+    /**
+     * Add stylesheet asset.
+     *
+     * @param {string} name Stylesheet name
+     * @param {string} path Stylesheet path
+     * @returns {CDN}
+     */
+    addCss(name, path) {
+        this.css[name] = path;
+        return this;
+    }
+
+    /**
+     * Get stylesheet asset.
+     *
+     * @param {string} name Stylesheet name
+     * @returns {string}
+     */
+    getCss(name) {
+        if (this.css[name]) {
+            return this.css[name];
+        }
+    }
+
+    replaceVersion(str) {
+        if (null == this.version) {
+            return str.replace(/%VER%\//g, '');
+        }
+        return str.replace(/%VER%/g, this.version);
+    }
+
+    replacePath(str, asset, path = null) {
+        let p = this.paths[asset] ? this.paths[asset] : path;
+        if (null == p) {
+            return str.replace(/%TYPE%\//g, '');
+        }
+        return str.replace(/%TYPE%/g, p);
+    }
+
+    replaceName(str, name) {
+        return str.replace(/%NAME%/g, name);
+    }
+
+    get(asset, name, path) {
+        let cdn, file;
+        switch (asset) {
+            case ScriptAsset.JAVASCRIPT:
+                file = Object.keys(this.js).length > 0 ? this.getJs(name) : name;
+                break;
+            case ScriptAsset.STYLESHEET:
+                file = Object.keys(this.css).length > 0 ? this.getCss(name) : name;
+                break;
+        }
+        if (file) {
+            file = this.replaceVersion(file);
+            cdn = this.url;
+            cdn = this.replacePath(cdn, asset, path);
+            cdn = this.replaceVersion(cdn);
+            cdn = this.replaceName(cdn, file);
+        }
+        return cdn;
+    }
 }
 
 /**
@@ -524,4 +756,4 @@ module.exports = {
     ScriptAsset: ScriptAsset,
     ScriptRepository: ScriptRepository,
     ScriptManager: ScriptManager.singleton(),
-};
+}
