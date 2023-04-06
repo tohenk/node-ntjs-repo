@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2021 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-const { ScriptAsset } = require('./../index');
-const JQuery = require('./../JQuery');
+const { ScriptAsset, ScriptManager } = require('../index');
+const JQuery = ScriptManager.require('JQuery');
 
 /**
  * SemanticUI script repository.
@@ -33,7 +33,7 @@ class SemanticUI extends JQuery {
     initialize() {
         this.name = 'SemanticUI';
         this.dependencies = ['JQuery'];
-        this.asset = new ScriptAsset('semantic-ui');
+        this.assetPath = 'semantic-ui';
         this.addAsset(ScriptAsset.JAVASCRIPT, 'semantic.min');
         this.addAsset(ScriptAsset.STYLESHEET, 'semantic.min');
     }
@@ -41,7 +41,6 @@ class SemanticUI extends JQuery {
     static instance() {
         return new this();
     }
-
 }
 
 module.exports = SemanticUI;

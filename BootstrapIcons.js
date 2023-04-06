@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,37 +22,14 @@
  * SOFTWARE.
  */
 
-const { Script, ScriptAsset } = require('../index');
+const { Script, ScriptAsset } = require('./index');
 
-/**
- * JQuery script repository.
- */
-class JQuery extends Script {
-
-    constructor() {
-        super('JQuery', 'jquery');
-    }
+class BootstrapIcons extends Script {
 
     initialize() {
-        this.assetPath = this.repository;
-        this.addAsset(ScriptAsset.JAVASCRIPT, 'jquery.min');
-    }
-
-    initRepository(repository) {
-        repository.wrapSize = 2;
-        repository.wrapper = `
-(function($) {
-    (function loader(f) {
-        if (document.ntloader && !document.ntloader.isScriptLoaded()) {
-            setTimeout(function() {
-                loader(f);
-            }, 100);
-        } else {
-            f($);
-        }
-    })(function($) {%s
-    });
-})(jQuery);`;
+        this.name = 'BootstrapIcons';
+        this.assetPath = 'bootstrap-icons';
+        this.addAsset(ScriptAsset.STYLESHEET, 'bootstrap-icons');
     }
 
     static instance() {
@@ -60,4 +37,4 @@ class JQuery extends Script {
     }
 }
 
-module.exports = JQuery;
+module.exports = BootstrapIcons;

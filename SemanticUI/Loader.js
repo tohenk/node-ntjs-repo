@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2021 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository } = require('./../index');
-const SemanticUI = require('./index');
+const { ScriptRepository, ScriptManager } = require('../index');
+const SemanticUI = ScriptManager.require('SemanticUI');
 
 /**
  * SemanticUI/Loader script repository.
@@ -39,13 +39,13 @@ class Loader extends SemanticUI {
     getScript() {
         return `
 $.loader = function(container, options) {
-    var loader = {
+    const loader = {
         container: container,
         url: options.url,
         column: options.column || 0,
         load: function(page) {
-            var self = this;
-            var page = page || self.page || 1;
+            const self = this;
+            let page = page || self.page || 1;
             self.page = page;
             $.get(self.url.replace(/PAGE/, page)).then(function(json) {
                 if (json.items) {
@@ -63,20 +63,20 @@ $.loader = function(container, options) {
             });
         },
         add: function(items) {
-            var self = this;
-            var items = $.isArray(items) ? items : [items];
-            var tbody = self.container.find('tbody');
+            const self = this;
+            items = $.isArray(items) ? items : [items];
+            let tbody = self.container.find('tbody');
             if (tbody.length) tbody.remove();
             $('<tbody></tbody>').appendTo(self.container);
-            var tbody = self.container.find('tbody');
+            tbody = self.container.find('tbody');
             $.each(items, function(idx, item) {
-                var row = options.formatRow.call(self, item);
+                const row = options.formatRow.call(self, item);
                 row.appendTo(tbody);
             });
         },
         buildInfo: function(items, count) {
-            var self = this;
-            var title = self.container.siblings('.x-title');
+            const self = this;
+            const title = self.container.siblings('.x-title');
             if (title.length) {
                 switch (count) {
                     case 0:
@@ -96,12 +96,12 @@ $.loader = function(container, options) {
             }
         },
         buildNav: function(items) {
-            var self = this;
-            var tfoot = self.container.find('tfoot');
+            const self = this;
+            let tfoot = self.container.find('tfoot');
             if (tfoot.length) tfoot.remove();
             $('<tfoot></tfoot>').appendTo(self.container);
-            var tfoot = self.container.find('tfoot');
-            var menus = [];
+            tfoot = self.container.find('tfoot');
+            const menus = [];
             $.each(items, function(idx, item) {
                 if (item.icon) {
                     menus.push($.util.template('<a class="icon item" data-page="%PAGE%">' +
@@ -121,7 +121,7 @@ $.loader = function(container, options) {
                 '</div></th></tr>').appendTo(tfoot);
             tfoot.find('a.item').on('click', function(e) {
                 e.preventDefault();
-                var page = parseInt($(this).attr('data-page'));
+                const page = parseInt($(this).attr('data-page'));
                 self.load(page);
             });
         },
@@ -133,7 +133,7 @@ $.loader = function(container, options) {
             return icon;
         },
         icon: function(type) {
-            var icon;
+            let icon;
             switch (type) {
                 case 1:
                     icon = this.iconOverlay('phone');
@@ -165,7 +165,6 @@ $.loader = function(container, options) {
     static instance() {
         return new this();
     }
-    
 }
 
 module.exports = Loader;

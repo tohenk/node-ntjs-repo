@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2021 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository } = require('./../../index');
-const Dialog = require('./index');
+const { ScriptRepository, ScriptManager } = require('../../index');
+const JQuery = ScriptManager.require('JQuery');
 
 /**
  * SemanticUI/Dialog/Input script repository.
  */
-class Input extends Dialog {
+class Input extends JQuery {
 
     initialize() {
         this.name = 'Input';
@@ -44,21 +44,20 @@ $.define('ntdlg', {
             callback = icon;
             icon = null;
         }
-        //var size = size || 50;
-        var icon = icon || $.ntdlg.ICON_INPUT;
-        var message =
+        icon = icon || $.ntdlg.ICON_INPUT;
+        message =
             '<form class="ui container form">' +
                 '<div class="field">' +
                     '<label>' + message + '</label>' +
                     '<input type="text" value="' + value + '">' +
                 '</div>' +
             '</form>';
-        var dlg = $.ntdlg.dialog(id, title, message, icon, {
+        const dlg = $.ntdlg.dialog(id, title, message, icon, {
             'okay': {
                 type: 'green approve',
                 caption: '<i class="check icon"></i>Ok',
                 handler: function() {
-                    var v = dlg.find('input[type=text]').val();
+                    const v = dlg.find('input[type=text]').val();
                     return callback(v);
                 }
             },
@@ -75,7 +74,6 @@ $.define('ntdlg', {
     static instance() {
         return new this();
     }
-
 }
 
 module.exports = Input;

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -26,26 +26,52 @@ const { ScriptRepository, ScriptManager } = require('../../index');
 const JQuery = ScriptManager.require('JQuery');
 
 /**
- * SemanticUI/Dialog/Message script repository.
+ * Bootstrap/Dialog/Input script repository.
  */
-class Message extends JQuery {
+class Input extends JQuery {
 
     initialize() {
-        this.name = 'Message';
+        this.name = 'Input';
         this.position = ScriptRepository.POSITION_FIRST;
-        this.addDependencies(['SemanticUI/Dialog']);
+        this.addDependencies(['JQuery/Define', 'Bootstrap/Dialog']);
     }
 
     getScript() {
+        const ok = this.translate('OK');
+        const cancel = this.translate('Cancel');
+
         return `
 $.define('ntdlg', {
-    message: function(id, title, message, icon, cb) {
-        return $.ntdlg.dialog(id, title, message, icon, {
-            okay: {
-                type: 'green approve',
-                caption: '<i class="check icon"></i>Ok',
+    input: function(id, title, message, value, size, icon, callback) {
+        if (typeof size == 'function') {
+            callback = size;
+            size = null;
+        } else if (typeof icon == 'function') {
+            callback = icon;
+            icon = null;
+        }
+        size = size || 50;
+        icon = icon || $.ntdlg.ICON_INPUT;
+        message = '<p class="mb-1">' + message + '</p><input class="form-control focused" type="text" value="' + value + '" size="' + size + '">'
+        $.ntdlg.dialog(id, title, message, icon, {
+            '${ok}': {
+                icon: $.ntdlg.BTN_ICON_OK,
+                handler: function() {
+                    const dlg = $(this);
+                    $.ntdlg.close(dlg);
+                    if (typeof callback == 'function') {
+                        const v = dlg.find('input[type=text]').val();
+                        callback(v);
+                    }
+                }
+            },
+            '${cancel}': {
+                icon: $.ntdlg.BTN_ICON_CANCEL,
+                handler: function() {
+                    $.ntdlg.close($(this));
+                }
             }
-        }, cb);
+        });
     }
 }, true);
 `;
@@ -56,4 +82,4 @@ $.define('ntdlg', {
     }
 }
 
-module.exports = Message;
+module.exports = Input;

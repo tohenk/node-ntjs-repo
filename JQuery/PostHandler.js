@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -26,48 +26,42 @@ const { ScriptRepository, ScriptManager } = require('../index');
 const JQuery = ScriptManager.require('JQuery');
 
 /**
- * JQuery/Define script repository.
+ * JQuery/PostHandler script repository.
  */
-class Define extends JQuery {
+class PostHandler extends JQuery {
 
     initialize() {
-        this.name = 'Define';
+        this.name = 'PostHandler';
         this.position = ScriptRepository.POSITION_FIRST;
-        this.addDependencies(['JQuery']);
+        this.addDependencies(['JQuery', 'JQuery/PostErrorHelper']);
     }
 
     getScript() {
         return `
-if (!$.define) {
-    'use strict';
-    $.namespace = {
-        create: function(ns) {
-            let o = $;
-            const p = ns.split('.');
-            for (let i = 0; i < p.length; i++) {
-                o[p[i]] = o[p[i]] || {};
-                o = o[p[i]];
+$.extend({
+    handlePostData: function(data, errhelper, success_cb, error_cb) {
+        $.postErr = null;
+        let json = typeof(data) === 'object' ? data : $.parseJSON(data);
+        if (json.success) {
+            if (typeof success_cb == 'function') {
+                success_cb(json);
             }
-            return o;
-        },
-        has: function(ns) {
-            let o = $;
-            const p = ns.split('.');
-            for (let i = 0; i < p.length; i++) {
-                if (!o[p[i]]) {
-                    return false;
-                }
-                o = o[p[i]];
+        } else {
+            if (json.error) {
+                $.map($.isArray(json.error) || $.isPlainObject(json.error) ? json.error : new Array(json.error), errhelper.handleError);
             }
-            return true;
-        },
-        define: function(ns, o, e) {
-            if (!e && $.namespace.has(ns)) return;
-            $.extend($.namespace.create(ns), o);
+            if (typeof error_cb == 'function') {
+                error_cb(json);
+            }
         }
+    },
+    urlPost: function(url, callback, errhelper) {
+        errhelper = errhelper ? errhelper : $.errhelper();
+        $.post(url).done(function(data) {
+            $.handlePostData(data, errhelper, callback);
+        });
     }
-    $.define = $.namespace.define;
-}
+});
 `;
     }
 
@@ -76,4 +70,4 @@ if (!$.define) {
     }
 }
 
-module.exports = Define;
+module.exports = PostHandler;

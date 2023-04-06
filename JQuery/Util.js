@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2021 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository } = require('./../index');
-const JQuery = require('./index');
+const { ScriptRepository, ScriptManager } = require('../index');
+const JQuery = ScriptManager.require('JQuery');
 
 /**
  * JQuery/Util script repository.
@@ -40,8 +40,8 @@ class Util extends JQuery {
         return `
 $.define('util', {
     template: function(tmpl, replaces) {
-        for (var n in replaces) {
-            var re = new RegExp('%' + n + '%', 'g');
+        for (let n in replaces) {
+            let re = new RegExp('%' + n + '%', 'g');
             tmpl = tmpl.replace(re, replaces[n]);
         }
         return tmpl;
@@ -55,12 +55,12 @@ $.define('util', {
         }
     },
     applyProp: function(props, src, dest, remove) {
-        var self = this;
+        const self = this;
         if (src && dest) {
             if (typeof props == 'object') {
                 if ($.isArray(props)) {
-                    for (var i = 0; i < props.length; i++) {
-                        var prop = props[i];
+                    for (let i = 0; i < props.length; i++) {
+                        let prop = props[i];
                         self.copyProp(prop, src, dest, remove);
                     }
                 } else {
@@ -77,11 +77,11 @@ $.define('util', {
         }
     },
     applyEvent: function(el, events, handlers) {
-        var self = this;
+        const self = this;
         if (typeof events == 'object') {
             if ($.isArray(events)) {
-                for (var i = 0; i < events.length; i++) {
-                    var event = events[i];
+                for (let i = 0; i < events.length; i++) {
+                    let event = events[i];
                     self.bindEvent(el, event, handlers);
                 }
             } else {
@@ -105,7 +105,6 @@ $.define('util', {
     static instance() {
         return new this();
     }
-
 }
 
 module.exports = Util;

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2021 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository } = require('./../../index');
-const Dialog = require('./index');
+const { ScriptRepository, ScriptManager } = require('../../index');
+const JQuery = ScriptManager.require('JQuery');
 
 /**
  * SemanticUI/Dialog/Wait script repository.
  */
-class Wait extends Dialog {
+class Wait extends JQuery {
 
     initialize() {
         this.name = 'Wait';
@@ -42,14 +42,14 @@ $.define('ntdlg', {
     waitId: 'wdlg',
     waitDlg: null,
     wait: function(msg) {
-        var self = this;
-        if ('close' == msg) {
+        const self = this;
+        if ('close' === msg) {
             if (self.waitDlg) {
                 $.ntdlg.close(self.waitDlg);
             }
         } else {
-            if (null == self.waitDlg) {
-                var message = $.util.template($.ntdlg.messageTmpl, {
+            if (null === self.waitDlg) {
+                const message = $.util.template($.ntdlg.messageTmpl, {
                     ICON: $.util.template($.ntdlg.iconTmpl, {ICON: 'big notched circle loading icon'}),
                     MESSAGE: msg
                 });
@@ -70,7 +70,6 @@ $.define('ntdlg', {
     static instance() {
         return new this();
     }
-
 }
 
 module.exports = Wait;

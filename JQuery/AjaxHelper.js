@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -26,49 +26,52 @@ const { ScriptRepository, ScriptManager } = require('../index');
 const JQuery = ScriptManager.require('JQuery');
 
 /**
- * JQuery/Define script repository.
+ * JQuery/AjaxHelper script repository.
  */
-class Define extends JQuery {
+class AjaxHelper extends JQuery {
 
     initialize() {
-        this.name = 'Define';
+        this.name = 'AjaxHelper';
         this.position = ScriptRepository.POSITION_FIRST;
         this.addDependencies(['JQuery']);
     }
 
     getScript() {
         return `
-if (!$.define) {
-    'use strict';
-    $.namespace = {
-        create: function(ns) {
-            let o = $;
-            const p = ns.split('.');
-            for (let i = 0; i < p.length; i++) {
-                o[p[i]] = o[p[i]] || {};
-                o = o[p[i]];
+$.ajaxhelper = function(el) {
+    const helper = {
+        el: null,
+        dataKey: '_acxhr',
+        load: function(url, params, callback) {
+            const self = this;
+            if (typeof params === 'function') {
+                callback = params;
+                params = {};
             }
-            return o;
-        },
-        has: function(ns) {
-            let o = $;
-            const p = ns.split('.');
-            for (let i = 0; i < p.length; i++) {
-                if (!o[p[i]]) {
-                    return false;
-                }
-                o = o[p[i]];
+            const oxhr = self.el.data(self.dataKey);
+            if (oxhr && 'pending' === oxhr.state()) {
+                oxhr.abort();
             }
-            return true;
-        },
-        define: function(ns, o, e) {
-            if (!e && $.namespace.has(ns)) return;
-            $.extend($.namespace.create(ns), o);
+            self.el.trigger('xhrstart');
+            const xhr = $.ajax({
+                url: url,
+                dataType: 'json',
+                data: params
+            }).done(function(data) {
+                callback(data);
+            }).always(function() {
+                self.el.trigger('xhrend');
+            });
+            self.el.data(self.dataKey, xhr);
         }
     }
-    $.define = $.namespace.define;
-}
-`;
+    if (typeof el == 'string') {
+        helper.el = $(el);
+    } else {
+        helper.el = el;
+    }
+    return helper;
+}`;
     }
 
     static instance() {
@@ -76,4 +79,4 @@ if (!$.define) {
     }
 }
 
-module.exports = Define;
+module.exports = AjaxHelper;

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,52 +22,36 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../index');
+const { ScriptRepository, ScriptManager } = require('../../index');
 const JQuery = ScriptManager.require('JQuery');
 
 /**
- * JQuery/Define script repository.
+ * Bootstrap/Dialog/Message script repository.
  */
-class Define extends JQuery {
+class Message extends JQuery {
 
     initialize() {
-        this.name = 'Define';
+        this.name = 'Message';
         this.position = ScriptRepository.POSITION_FIRST;
-        this.addDependencies(['JQuery']);
+        this.addDependencies(['JQuery/Define', 'Bootstrap/Dialog']);
     }
 
     getScript() {
+        const ok = this.translate('OK');
+
         return `
-if (!$.define) {
-    'use strict';
-    $.namespace = {
-        create: function(ns) {
-            let o = $;
-            const p = ns.split('.');
-            for (let i = 0; i < p.length; i++) {
-                o[p[i]] = o[p[i]] || {};
-                o = o[p[i]];
-            }
-            return o;
-        },
-        has: function(ns) {
-            let o = $;
-            const p = ns.split('.');
-            for (let i = 0; i < p.length; i++) {
-                if (!o[p[i]]) {
-                    return false;
+$.define('ntdlg', {
+    message: function(id, title, message, icon) {
+        $.ntdlg.dialog(id, title, message, icon, {
+            '${ok}': {
+                icon: $.ntdlg.BTN_ICON_OK,
+                handler: function() {
+                    $.ntdlg.close($(this));
                 }
-                o = o[p[i]];
             }
-            return true;
-        },
-        define: function(ns, o, e) {
-            if (!e && $.namespace.has(ns)) return;
-            $.extend($.namespace.create(ns), o);
-        }
+        });
     }
-    $.define = $.namespace.define;
-}
+}, true);
 `;
     }
 
@@ -76,4 +60,4 @@ if (!$.define) {
     }
 }
 
-module.exports = Define;
+module.exports = Message;

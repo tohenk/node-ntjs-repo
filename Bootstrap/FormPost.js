@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2021 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -23,52 +23,17 @@
  */
 
 const { ScriptRepository, ScriptManager } = require('../index');
-const JQuery = ScriptManager.require('JQuery');
+const JQueryFormPost = ScriptManager.require('JQuery/FormPost');
 
 /**
- * JQuery/Define script repository.
+ * Bootstrap/FormPost script repository.
  */
-class Define extends JQuery {
+class FormPost extends JQueryFormPost {
 
     initialize() {
-        this.name = 'Define';
+        this.name = 'FormPost';
         this.position = ScriptRepository.POSITION_FIRST;
-        this.addDependencies(['JQuery']);
-    }
-
-    getScript() {
-        return `
-if (!$.define) {
-    'use strict';
-    $.namespace = {
-        create: function(ns) {
-            let o = $;
-            const p = ns.split('.');
-            for (let i = 0; i < p.length; i++) {
-                o[p[i]] = o[p[i]] || {};
-                o = o[p[i]];
-            }
-            return o;
-        },
-        has: function(ns) {
-            let o = $;
-            const p = ns.split('.');
-            for (let i = 0; i < p.length; i++) {
-                if (!o[p[i]]) {
-                    return false;
-                }
-                o = o[p[i]];
-            }
-            return true;
-        },
-        define: function(ns, o, e) {
-            if (!e && $.namespace.has(ns)) return;
-            $.extend($.namespace.create(ns), o);
-        }
-    }
-    $.define = $.namespace.define;
-}
-`;
+        this.addDependencies(['JQuery', 'JQuery/PostHandler', 'Bootstrap/Dialog/Wait', 'Bootstrap/Dialog/Message']);
     }
 
     static instance() {
@@ -76,4 +41,4 @@ if (!$.define) {
     }
 }
 
-module.exports = Define;
+module.exports = FormPost;

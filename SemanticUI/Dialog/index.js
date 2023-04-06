@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2021 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository } = require('./../../index');
-const SemanticUI = require('./../index');
+const { ScriptRepository, ScriptManager } = require('../../index');
+const JQuery = ScriptManager.require('SemanticUI');
 
 /**
  * SemanticUI/Dialog script repository.
  */
-class Dialog extends SemanticUI {
+class Dialog extends JQuery {
 
     initialize() {
         this.name = 'Dialog';
@@ -59,33 +59,34 @@ $.define('ntdlg', {
     buttonTmpl:
         '<div id="%ID%" class="ui %TYPE% button">%CAPTION%</div>',
     create: function(id, title, message, options) {
-        var self = this;
-        var dlg_id = '#' + id;
+        const self = this;
+        const dlg_id = '#' + id;
         $(dlg_id).remove();
         if ($.ntdlg.moved && typeof $.ntdlg.moved.refs[id] != 'undefined') {
             $('div.' + $.ntdlg.moved.refs[id]).remove();
             delete $.ntdlg.moved.refs[id];
         }
-        var modal = {
+        const modal = {
             closable: typeof options.closable != 'undefined' ? options.closable : true
         }
-        var buttons = [];
-        var handlers = [];
-        var okay = ['approve', 'positive', 'ok'];
-        var nope = ['deny', 'negative', 'cancel'];
-        var cnt = 0;
+        const buttons = [];
+        const handlers = [];
+        const okay = ['approve', 'positive', 'ok'];
+        const nope = ['deny', 'negative', 'cancel'];
+        let cnt = 0;
         if (options.buttons) {
             $.each(options.buttons, function(k, v) {
+                let caption, btnType, handler;
                 if (typeof v == 'object') {
-                    var caption = v.caption ? v.caption : k;
-                    var btnType = v.type ? v.type : 'secondary';
-                    var handler = typeof v.handler == 'function' ? v.handler : null;
+                    caption = v.caption ? v.caption : k;
+                    btnType = v.type ? v.type : 'secondary';
+                    handler = typeof v.handler == 'function' ? v.handler : null;
                 } else {
-                    var caption = k;
-                    var btnType = 0 == cnt ? 'primary' : 'secondary';
-                    var handler = typeof v == 'function' ? v : null;
+                    caption = k;
+                    btnType = 0 == cnt ? 'primary' : 'secondary';
+                    handler = typeof v == 'function' ? v : null;
                 }
-                var btnid = id + '_btn_' + k.replace(/\W+/g, "-").toLowerCase();
+                const btnid = id + '_btn_' + k.replace(/\W+/g, "-").toLowerCase();
                 buttons.push($.util.template(self.buttonTmpl, {
                     ID: btnid,
                     TYPE: btnType,
@@ -123,7 +124,7 @@ $.define('ntdlg', {
         if (typeof options.hide == 'function') {
             modal.onHidden = options.hide;
         }
-        var content = $.util.template(self.dialogTmpl, {
+        const content = $.util.template(self.dialogTmpl, {
             ID: id,
             TITLE: title,
             MODAL: options.size ? options.size : 'tiny',
@@ -131,16 +132,16 @@ $.define('ntdlg', {
             CONTENT: message
         });
         $(document.body).append(content);
-        var dlg = $(dlg_id);
+        const dlg = $(dlg_id);
         // move embedded modal
-        var bd = dlg.find('.content');
-        var d = bd.find('.ui.modal');
+        const bd = dlg.find('.content');
+        const d = bd.find('.ui.modal');
         if (d.length) {
             if (!$.ntdlg.moved) {
                 $.ntdlg.moved = {count: 0, refs: {}}
             }
             $.ntdlg.moved.count++;
-            var movedDlg = id + '-moved-' + $.ntdlg.moved.count;
+            const movedDlg = id + '-moved-' + $.ntdlg.moved.count;
             $.ntdlg.moved.refs[id] = movedDlg;
             d.addClass(movedDlg);
             d.appendTo($(document.body));
@@ -195,14 +196,14 @@ $.define('ntdlg', {
         }
     },
     dialog: function(id, title, message, icon, buttons, close_cb) {
-        var self = this;
-        var icon = icon || self.ICON_INFO;
-        var buttons = buttons || [];
-        var message = $.util.template(self.messageTmpl, {
+        const self = this;
+        icon = icon || self.ICON_INFO;
+        buttons = buttons || [];
+        message = $.util.template(self.messageTmpl, {
             ICON: $.util.template(self.iconTmpl, {ICON: icon}),
             MESSAGE: message
         });
-        var dlg = self.create(id, title, message, {
+        const dlg = self.create(id, title, message, {
             closable: false,
             buttons: buttons,
             hide: function() {
