@@ -33,7 +33,7 @@ class PostErrorHelper extends JQuery {
     initialize() {
         this.name = 'PostErrorHelper';
         this.position = ScriptRepository.POSITION_FIRST;
-        this.addDependencies(['JQuery']);
+        this.addDependencies(['JQuery', 'JQuery/ScrollTo']);
     }
 
     getScript() {

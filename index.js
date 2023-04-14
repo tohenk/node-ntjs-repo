@@ -363,7 +363,14 @@ class ScriptRepository {
                     result[i] = ' '.repeat(this.wrapSize * 4) + result[i];
                 }
             }
-            return util.format(this.wrapper, eol + result.join(eol));
+            const wrappers = this.wrapper.split(eol);
+            if (wrappers.length && wrappers[0].trim() === '') {
+                wrappers.shift();
+            }
+            if (wrappers.length && wrappers[wrappers.length - 1].trim() === '') {
+                wrappers.pop();
+            }
+            return util.format(wrappers.join(eol), eol + result.join(eol));
         }
         return result.join(eol);
     }

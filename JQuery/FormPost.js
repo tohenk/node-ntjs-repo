@@ -38,11 +38,13 @@ class FormPost extends JQuery {
     }
 
     getOverrides() {
-        return {};
+        return {
+        }
     }
 
     getErrHelperOptions() {
-        return {};
+        return {
+        }
     }
 
     getScript() {
@@ -89,7 +91,7 @@ $.formpost = function(form, options) {
             form.trigger('formpost');
             if (fp.paramName) {
                 params = form.data('submit-params');
-                params = typeof params == 'object' ? params : {};
+                params = typeof params === 'object' ? params : {};
                 params[fp.paramName] = form.serialize();
             } else {
                 params = form.serializeArray();
@@ -121,25 +123,25 @@ $.formpost = function(form, options) {
             request
                 .done(function(data) {
                     $.handlePostData(data, fp.errhelper, function(data) {
-                        if (typeof success_cb == 'function') {
+                        if (typeof success_cb === 'function') {
                             success_cb(data);
                         }
                     }, function(data) {
-                        if (typeof error_cb == 'function') {
+                        if (typeof error_cb === 'function') {
                             error_cb(data);
                         }
-                        if (typeof fp.onerror == 'function') {
+                        if (typeof fp.onerror === 'function') {
                             fp.onerror(data);
                         }
                     });
                 })
                 .fail(function() {
-                    if (typeof fp.onfail == 'function') {
+                    if (typeof fp.onfail === 'function') {
                         fp.onfail();
                     }
                 })
                 .always(function() {
-                    if (typeof fp.onalways == 'function') {
+                    if (typeof fp.onalways === 'function') {
                         fp.onalways();
                     }
                 })
@@ -158,7 +160,7 @@ $.formpost = function(form, options) {
             }
             form.find('[type=submit]').on('click', submitclicker);
             const doit = function() {
-                if (self.hasRequired(form) || (typeof self.onsubmit == 'function' && !self.onsubmit(form))) {
+                if (typeof self.onsubmit === 'function' && !self.onsubmit(form)) {
                     return false;
                 }
                 const url = self.url || form.attr('action');
@@ -170,24 +172,24 @@ $.formpost = function(form, options) {
                     if (json.notice) {
                         self.showSuccessMessage('${title}', json.notice, {
                             withOkay: !json.redir,
-                            autoClose: typeof $.fpRedir == 'function'
+                            autoClose: typeof $.fpRedir === 'function'
                         });
                     }
                     if (json.redir) {
-                        if (typeof $.fpRedir == 'function') {
+                        if (typeof $.fpRedir === 'function') {
                             $.fpRedir(json.redir);
                         } else {
                             window.location.href = json.redir;
                         }
                     }
                 }, function(json) {
-                    if (typeof self.onalways == 'function') {
+                    if (typeof self.onalways === 'function') {
                         self.onalways();
                     }
                     const f = function() {
                         self.errhelper.focusError();
                         form.trigger('formerror', [json]);
-                        if (typeof $.formErrorHandler == 'function') {
+                        if (typeof $.formErrorHandler === 'function') {
                             $.formErrorHandler(form);
                         }
                     }
@@ -212,7 +214,10 @@ $.formpost = function(form, options) {
             }
             form.on('submit', function(e) {
                 e.preventDefault();
-                if (typeof self.onconfirm == 'function') {
+                if (self.hasRequired(form)) {
+                    return false;
+                }
+                if (typeof self.onconfirm === 'function') {
                     self.onconfirm(form, doit);
                 } else {
                     doit();
@@ -220,8 +225,8 @@ $.formpost = function(form, options) {
             });
         },
         showSuccessMessage: function(title, message, opts) {
-            const autoclose = typeof opts.autoClose != 'undefined' ? opts.autoClose : false;
-            const withokay = typeof opts.withOkay != 'undefined' ? opts.withOkay : true;
+            const autoclose = typeof opts.autoClose !== 'undefined' ? opts.autoClose : false;
+            const withokay = typeof opts.withOkay !== 'undefined' ? opts.withOkay : true;
             const buttons = {};
             if (withokay && !autoclose) {
                 buttons['${ok}'] = function() {
