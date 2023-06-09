@@ -34,17 +34,9 @@ const scriptCaches = {};
  */
 class ScriptManager {
 
-    EOL = '\n'
-    CDN = '/js'
-
-    dirs = []
-    defaultScripts = []
-    defaultAssets = []
-
     repositories = {}
     assets = {}
     scripts = {}
-    cdns = {}
 
     /**
      * Create script instance or return one if its already created.
@@ -55,8 +47,10 @@ class ScriptManager {
     create(name) {
         if (!this.scripts[name]) {
             debug(`Load script ${name}`);
-            const script = this.require(name);
-            this.scripts[name] = script.instance();
+            const script = ScriptManager.require(name);
+            this.scripts[name] = script.instance()
+                .setManager(this)
+                .doInitialize();
         }
         if (!this.scripts[name]) {
             throw new Error(`Script ${name} can't be located.`);
@@ -65,125 +59,12 @@ class ScriptManager {
     }
 
     /**
-     * Require script file.
+     * Set this as default instance.
      *
-     * @param {string} name 
-     * @returns {any}
-     */
-    require(name) {
-        const scriptName = name.replace(/\//, path.sep);
-        let scriptFilename = scriptCaches[scriptName];
-        if (!scriptFilename) {
-            this.dirs.forEach((dir) => {
-                [
-                    path.join(dir, scriptName + '.js'),
-                    path.join(dir, scriptName, 'index.js'),
-                ].forEach((scriptFile) => {
-                    if (fs.existsSync(scriptFile)) {
-                        scriptFilename = scriptFile;
-                        return true;
-                    }
-                });
-                if (scriptFilename) return true;
-            });
-        }
-        if (!scriptFilename) {
-            throw new Error('Can\'t resolve script ' + name);
-        }
-        debug(`Script ${name} loaded from ${scriptFilename}`);
-        scriptCaches[scriptName] = scriptFilename;
-        return require(scriptFilename);
-    }
-
-    /**
-     * Add CDN repository.
-     *
-     * @param {string} repo
-     * @returns {CDN}
-     */
-    addCdn(repo) {
-        if (!this.cdns[repo]) {
-            this.cdns[repo] = new CDN(repo);
-        }
-        return this.cdns[repo];
-    }
-
-    /**
-     * Get CDN repository.
-     *
-     * @param {string} repo Repository name
-     * @returns {CDN}
-     */
-    getCdn(repo) {
-        if (this.cdns[repo]) {
-            return this.cdns[repo];
-        }
-    }
-
-    /**
-     * Parse and register CDN.
-     *
-     * @param {Object} cdns CDN parameters
      * @returns {ScriptManager}
      */
-    parseCdn(cdns) {
-        Object.keys(cdns).forEach(repo => {
-            let parameters = cdns[repo];
-            let enabled = true;
-            if (typeof parameters.disabled != 'undefined' && parameters.disabled) {
-                enabled = false;
-            }
-            if (enabled) {
-                let cdn = this.addCdn(repo);
-                if (parameters.url) cdn.url = parameters.url;
-                if (parameters.version) cdn.version = parameters.version;
-                [ScriptAsset.JAVASCRIPT, ScriptAsset.STYLESHEET].forEach(asset => {
-                    if (parameters.paths && parameters.paths[asset]) {
-                        cdn.setPath(asset, parameters.paths[asset]);
-                    }
-                    if (parameters[asset]) {
-                        let assets = parameters[asset];
-                        Object.keys(assets).forEach(name => {
-                            switch (asset) {
-                                case ScriptAsset.JAVASCRIPT:
-                                    cdn.addJs(name, assets[name]);
-                                    break;
-                                case ScriptAsset.STYLESHEET:
-                                    cdn.addCss(name, assets[name]);
-                                    break;
-                            }
-                        });
-                    }
-                });
-                debug('CDN parsed: %s', JSON.stringify(cdn));
-            }
-        });
-        return this;
-    }
-
-    /**
-     * Register script directory which script will be looked up.
-     *
-     * @param {string} path Path name
-     * @returns {ScriptManager}
-     */
-    addDir(path) {
-        if (this.dirs.indexOf(path) < 0) {
-            this.dirs.push(path);
-        }
-        return this;
-    }
-
-    /**
-     * Add default script to include.
-     *
-     * @param {string} name Script name
-     * @returns {ScriptManager}
-     */
-    addDefault(name) {
-        if (this.defaultScripts.indexOf(name) < 0) {
-            this.defaultScripts.push(name);
-        }
+    setInstance() {
+        ScriptManager.instance = this;
         return this;
     }
 
@@ -193,28 +74,9 @@ class ScriptManager {
      * @returns {ScriptManager}
      */
     includeDefaults() {
-        this.defaultScripts.forEach(script => {
+        ScriptManager.defaultScripts.forEach(script => {
+            debug('Including default script %s', script);
             this.create(script).include();
-        });
-        return this;
-    }
-
-    /**
-     * Add an asset.
-     *
-     * @param {string} type Asset type
-     * @param {string} name Asset name
-     * @param {ScriptAsset} asset Asset data
-     * @returns {ScriptManager}
-     */
-    addAsset(type, name, asset) {
-        if (!asset) {
-            asset = this.globalAsset();
-        }
-        this.defaultAssets.push({
-            asset: asset,
-            type: type,
-            name: name
         });
         return this;
     }
@@ -225,9 +87,10 @@ class ScriptManager {
      * @returns {ScriptManager}
      */
     includeAssets() {
-        this.defaultAssets.forEach(data => {
-            debug('Including default asset %s', JSON.stringify(data));
-            data.asset.use(data.type, data.name);
+        ScriptManager.defaultAssets.forEach(data => {
+            debug('Including default asset %s', data);
+            const asset = data.asset ? data.asset : this.globalAsset();
+            asset.use(data.type, data.name);
         });
         return this;
     }
@@ -255,7 +118,7 @@ class ScriptManager {
             let content = this.repositories[repo].getContent();
             if (content) result.push(content);
         }
-        return result.join(this.EOL);
+        return result.join(ScriptManager.EOL);
     }
 
     getAssets(type) {
@@ -267,7 +130,8 @@ class ScriptManager {
 
     globalAsset() {
         if (!this.gAsset) {
-            this.gAsset = new ScriptAsset('');
+            this.gAsset = new ScriptAsset();
+            this.gAsset.setManager(this);
             this.gAsset.setPath(ScriptAsset.JAVASCRIPT, ScriptAsset.JAVASCRIPT);
             this.gAsset.setPath(ScriptAsset.STYLESHEET, ScriptAsset.STYLESHEET);
             this.gAsset.cdn = false;
@@ -276,15 +140,195 @@ class ScriptManager {
     }
 
     /**
-     * Create an instance.
+     * Require script file.
      *
-     * @returns {ScriptManager} A ScriptManager instance
+     * @param {string} name 
+     * @returns {any}
      */
-    static singleton() {
-        if (!ScriptManager.instance) ScriptManager.instance = new this();
-        return ScriptManager.instance;
+    static require(name) {
+        const scriptName = name.replace(/\//, path.sep);
+        let scriptFilename = scriptCaches[scriptName];
+        if (!scriptFilename) {
+            ScriptManager.dirs.forEach((dir) => {
+                [
+                    path.join(dir, scriptName + '.js'),
+                    path.join(dir, scriptName, 'index.js'),
+                ].forEach((scriptFile) => {
+                    if (fs.existsSync(scriptFile)) {
+                        scriptFilename = scriptFile;
+                        return true;
+                    }
+                });
+                if (scriptFilename) return true;
+            });
+        }
+        if (!scriptFilename) {
+            throw new Error('Can\'t resolve script ' + name);
+        }
+        debug(`Script ${name} loaded from ${scriptFilename}`);
+        scriptCaches[scriptName] = scriptFilename;
+        return require(scriptFilename);
     }
 
+    /**
+     * Register script directory which script will be looked up.
+     *
+     * @param {string} path Path name
+     * @returns {ScriptManager}
+     */
+    static addDir(path) {
+        if (ScriptManager.dirs.indexOf(path) < 0) {
+            ScriptManager.dirs.push(path);
+        }
+        return ScriptManager;
+    }
+
+    /**
+     * Add default script to include.
+     *
+     * @param {string} name Script name
+     * @returns {ScriptManager}
+     */
+    static addDefault(name) {
+        if (ScriptManager.defaultScripts.indexOf(name) < 0) {
+            debug('Adding default script %s', name);
+            ScriptManager.defaultScripts.push(name);
+        }
+        return ScriptManager;
+    }
+
+    /**
+     * Add default asset.
+     *
+     * @param {string} type Asset type
+     * @param {string} name Asset name
+     * @param {ScriptAsset} asset Asset data
+     * @returns {ScriptManager}
+     */
+    static addDefaultAsset(type, name, asset = null) {
+        ScriptManager.defaultAssets.push({
+            asset: asset,
+            type: type,
+            name: name
+        });
+        return ScriptManager;
+    }
+
+    /**
+     * Add CDN repository.
+     *
+     * @param {string} repo
+     * @returns {CDN}
+     */
+    static addCdn(repo) {
+        if (!ScriptManager.cdns[repo]) {
+            ScriptManager.cdns[repo] = new CDN(repo);
+        }
+        return ScriptManager.cdns[repo];
+    }
+
+    /**
+     * Get CDN repository.
+     *
+     * @param {string} repo Repository name
+     * @returns {CDN}
+     */
+    static getCdn(repo) {
+        if (ScriptManager.cdns[repo]) {
+            return ScriptManager.cdns[repo];
+        }
+    }
+
+    /**
+     * Parse and register CDN.
+     *
+     * @param {Object} cdns CDN parameters
+     * @returns {ScriptManager}
+     */
+    static parseCdn(cdns) {
+        Object.keys(cdns).forEach(repo => {
+            let parameters = cdns[repo];
+            let enabled = true;
+            if (typeof parameters.disabled != 'undefined' && parameters.disabled) {
+                enabled = false;
+            }
+            if (enabled) {
+                let cdn = ScriptManager.addCdn(repo);
+                if (parameters.url) cdn.url = parameters.url;
+                if (parameters.version) cdn.version = parameters.version;
+                [ScriptAsset.JAVASCRIPT, ScriptAsset.STYLESHEET].forEach(asset => {
+                    if (parameters.paths && parameters.paths[asset]) {
+                        cdn.setPath(asset, parameters.paths[asset]);
+                    }
+                    if (parameters[asset]) {
+                        let assets = parameters[asset];
+                        Object.keys(assets).forEach(name => {
+                            switch (asset) {
+                                case ScriptAsset.JAVASCRIPT:
+                                    cdn.addJs(name, assets[name]);
+                                    break;
+                                case ScriptAsset.STYLESHEET:
+                                    cdn.addCss(name, assets[name]);
+                                    break;
+                            }
+                        });
+                    }
+                });
+                debug('CDN parsed: %s', cdn);
+            }
+        });
+        return ScriptManager;
+    }
+
+    static factory(script) {
+        if (!ScriptManager.instance) {
+            throw new Error('No manager instance found!');
+        }
+        return ScriptManager.instance.create(script);
+    }
+
+    static newInstance() {
+        const instance = new this();
+        return instance
+            .includeDefaults()
+            .setInstance();
+    }
+
+    static get dirs() {
+        if (ScriptManager._dirs === undefined) {
+            ScriptManager._dirs = [];
+        }
+        return ScriptManager._dirs;
+    }
+
+    static get defaultScripts() {
+        if (ScriptManager._defaultScripts === undefined) {
+            ScriptManager._defaultScripts = [];
+        }
+        return ScriptManager._defaultScripts;
+    }
+
+    static get defaultAssets() {
+        if (ScriptManager._defaultAssets === undefined) {
+            ScriptManager._defaultAssets = [];
+        }
+        return ScriptManager._defaultAssets;
+    }
+
+    static get cdns() {
+        if (ScriptManager._cdns === undefined) {
+            ScriptManager._cdns = {};
+        }
+        return ScriptManager._cdns;
+    }
+
+    static get EOL() {
+        return '\n'
+    }
+
+    static get CDN() {
+        return '/js';
+    }
 }
 
 /**
@@ -320,7 +364,7 @@ class ScriptRepository {
     }
 
     cleanLines(str) {
-        const lines = str.split(ScriptManager.singleton().EOL);
+        const lines = str.split(ScriptManager.EOL);
         let pos = 0;
         while (true) {
             if (lines.length) {
@@ -346,7 +390,7 @@ class ScriptRepository {
     }
 
     toString() {
-        const eol = ScriptManager.singleton().EOL;
+        const eol = ScriptManager.EOL;
         const result = [];
         [
             ScriptRepository.POSITION_FIRST,
@@ -392,13 +436,19 @@ class ScriptRepository {
  */
 class ScriptAsset {
 
+    manager = null
     name = null
     alias = null
     paths = {}
     cdn = true
 
-    constructor(name) {
+    constructor(name = null) {
         this.name = name;
+    }
+
+    setManager(manager) {
+        this.manager = manager;
+        return this;
     }
 
     setAlias(alias) {
@@ -418,16 +468,15 @@ class ScriptAsset {
     }
 
     add(type, asset, priority) {
-        const manager = ScriptManager.singleton();
-        if (!manager.assets[type]) {
-            manager.assets[type] = [];
+        if (!this.manager.assets[type]) {
+            this.manager.assets[type] = [];
         }
-        if (manager.assets[type].indexOf(asset) < 0) {
+        if (this.manager.assets[type].indexOf(asset) < 0) {
             priority = priority || ScriptAsset.PRIORITY_DEFAULT;
             if (priority == ScriptAsset.PRIORITY_FIRST) {
-                manager.assets[type].unshift(asset);
+                this.manager.assets[type].unshift(asset);
             } else {
-                manager.assets[type].push(asset);
+                this.manager.assets[type].push(asset);
             }
         }
         return this;
@@ -467,7 +516,7 @@ class ScriptAsset {
     generate(asset, type) {
         let result;
         if (this.isLocal(asset)) {
-            let cdn = ScriptManager.singleton().getCdn(this.alias ? this.alias : this.name);
+            let cdn = ScriptManager.getCdn(this.alias ? this.alias : this.name);
             if (cdn) {
                 result = cdn.get(type, asset, this.getPath(type));
             }
@@ -475,7 +524,7 @@ class ScriptAsset {
                 let p = [];
                 let dir = this.getDir(type);
                 if (this.cdn) {
-                    p.push(ScriptManager.singleton().CDN);
+                    p.push(ScriptManager.CDN);
                 }
                 if (dir) {
                     p.push(dir);
@@ -654,10 +703,19 @@ class Script {
         this.asset = null;
         this.assets = {};
         this.included = false;
+    }
+
+    doInitialize() {
         this.initialize();
+        return this;
     }
 
     initialize() {
+    }
+
+    setManager(manager) {
+        this.manager = manager;
+        return this;
     }
 
     addDependencies(dependencies) {
@@ -681,9 +739,8 @@ class Script {
     }
 
     includeDependencies(dependencies) {
-        const manager = ScriptManager.singleton();
         dependencies.forEach(dep => {
-            manager.create(dep).include();
+            this.manager.create(dep).include();
         });
         return this;
     }
@@ -713,24 +770,27 @@ class Script {
     }
 
     getDefaultAsset() {
-        if (null == this.defaultAsset) {
+        if (null === this.defaultAsset) {
             this.defaultAsset = new ScriptAsset(this.assetPath);
         }
         return this.defaultAsset;
     }
 
     getAsset() {
-        return this.asset ? this.asset : this.getDefaultAsset();
+        const asset = this.asset ? this.asset : this.getDefaultAsset();
+        if (asset.manager === null) {
+            asset.setManager(this.manager);
+        }
+        return asset;
     }
 
     getRepository() {
         if (this.repository) {
-            const manager = ScriptManager.singleton();
             const repository = this.repository ? this.repository : this.name;
-            let repo = manager.repositories[repository];
+            let repo = this.manager.repositories[repository];
             if (!repo) {
                 repo = new ScriptRepository(repository);
-                manager.repositories[repository] = repo;
+                this.manager.repositories[repository] = repo;
                 this.initRepository(repo);
             }
             return repo;
@@ -753,10 +813,11 @@ class Script {
 
     addAsset(type, name, priority) {
         priority = priority || ScriptAsset.PRIORITY_DEFAULT;
-        const key = [type, this.getAsset().name, name].join(':');
+        const asset = this.getAsset();
+        const key = [type, asset.name, name].join(':');
         if (!this.assets[key]) {
-            this.assets[key] = {type: type, asset: this.getAsset(), name: name, priority: priority};
-            debug('Adding asset %s', JSON.stringify(this.assets[key]));
+            this.assets[key] = {type: type, asset: asset, name: name, priority: priority};
+            debug('Adding asset %s: %s', type, name);
         }
         return this;
     }
@@ -799,18 +860,18 @@ class Script {
     }
 
     translate(message) {
-        if (typeof ScriptManager.singleton().translator === 'function') {
-            message = ScriptManager.singleton().translator(message);
+        if (typeof ScriptManager.translator === 'function') {
+            message = ScriptManager.translator(message);
         }
         return message;
     }
 }
 
-ScriptManager.singleton().addDir(__dirname);
+ScriptManager.addDir(__dirname);
 
 module.exports = {
     Script: Script,
     ScriptAsset: ScriptAsset,
     ScriptRepository: ScriptRepository,
-    ScriptManager: ScriptManager.singleton(),
+    ScriptManager: ScriptManager,
 }
