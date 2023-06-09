@@ -52,6 +52,7 @@ class FormPost extends JQuery {
         const error = this.translate('Error');
         const ok = this.translate('OK');
         const message = this.translate('Please wait while your data being saved.');
+        const redirDelay = FormPost.redirDelay ? FormPost.redirDelay : 0;
 
         return `
 $.formpost = function(form, options) {
@@ -62,6 +63,7 @@ $.formpost = function(form, options) {
         progress: true,
         url: null,
         paramName: null,
+        redirDelay: ${redirDelay},
         onsubmit: null,
         onfail: null,
         onerror: null,
@@ -179,7 +181,13 @@ $.formpost = function(form, options) {
                         if (typeof $.fpRedir === 'function') {
                             $.fpRedir(json.redir);
                         } else {
-                            window.location.href = json.redir;
+                            if (self.redirDelay > 0) {
+                                setTimeout(function() {
+                                    window.location.href = json.redir;
+                                }, self.redirDelay);
+                            } else {
+                                window.location.href = json.redir;
+                            }
                         }
                     }
                 }, function(json) {
