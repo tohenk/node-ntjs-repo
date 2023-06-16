@@ -84,9 +84,9 @@ $.define('ntdlg', {
     iconTmpl:
         '<span class="dialog-icon %ICON%"></span>',
     messageTmpl:
-        '<div class="d-flex align-items-center">' +
-          '<div class="flex-shrink-0 p-2">%ICON%</div>' +
-          '<div class="flex-grow-1 ms-3">%MESSAGE%</div>' +
+        '<div class="d-flex flex-row">' +
+          '<div class="flex-shrink-0 px-2">%ICON%</div>' +
+          '<div class="flex-grow-1 ms-3 align-self-center">%MESSAGE%</div>' +
         '</div>',
     buttonClass:
         'btn btn-outline-%TYPE%',
