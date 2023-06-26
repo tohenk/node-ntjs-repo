@@ -45,22 +45,22 @@ $.loader = function(container, options) {
         column: options.column || 0,
         load: function(page) {
             const self = this;
-            let page = page || self.page || 1;
-            self.page = page;
-            $.get(self.url.replace(/PAGE/, page)).then(function(json) {
-                if (json.items) {
-                    self.add(json.items);
-                    if (typeof json.count !== 'undefined') {
-                        self.buildInfo(json.items, json.count);
+            self.page = page || self.page || 1;
+            $.get(self.url.replace(/PAGE/, self.page))
+                .done(function(json) {
+                    if (json.items) {
+                        self.add(json.items);
+                        if (typeof json.count !== 'undefined') {
+                            self.buildInfo(json.items, json.count);
+                        }
                     }
-                }
-                if (json.pages && json.pages.length) {
-                    self.buildNav(json.pages);
-                }
-                if (typeof options.loaded == 'function') {
-                    options.loaded.call(self, json);
-                }
-            });
+                    if (json.pages && json.pages.length) {
+                        self.buildNav(json.pages);
+                    }
+                    if (typeof options.loaded == 'function') {
+                        options.loaded.call(self, json);
+                    }
+                });
         },
         add: function(items) {
             const self = this;
