@@ -35,15 +35,13 @@ class Notification extends JQuery {
 
     getScript() {
         const title = this.translate('Notification');
-        const close = this.translate('Close');
-        const useToast = Notification.getUseToast() ? 'true' : 'false';
 
         return `
 $.define('notif', {
-    useToast: ${useToast},
+    title: '${title}',
     supported: function() {
         const self = this;
-        if (typeof $.notif.allowed == 'undefined') {
+        if (typeof $.notif.allowed === 'undefined') {
             let allowed = false;
             // https://developer.mozilla.org/en/docs/Web/API/notification
             if (window.Notification && Notification.permission !== "denied") {
@@ -63,7 +61,7 @@ $.define('notif', {
     },
     notifyNotification: function(message, options) {
         const self = this;
-        if (typeof options == 'string') {
+        if (typeof options === 'string') {
             let icon;
             switch (options) {
                 case 'success':
@@ -86,72 +84,32 @@ $.define('notif', {
             options = {};
             if (icon) options.icon = icon;
         }
-        const title = options.title || '${title}';
+        const title = options.title || self.title;
         const content = {body: message};
         if (options.icon) content.icon = options.icon;
         const n = new Notification(title, content);
         setTimeout(n.close.bind(n), options.delay || 5000);
         return n; 
     },
-    notifyToast: function(message, options) {
-        const self = this;
-        let icon;
-        switch (options) {
-            case 'success':
-                icon = 'bi-check-circle text-success';
-                break;
-            case 'error':
-                icon = 'bi-x-circle text-danger';
-                break;
-            case 'info':
-                icon = 'bi-info-circle text-info';
-                break;
-            case 'warn':
-                icon = 'bi-exclamation-circle text-warning';
-                break;
-        }
-        const tmpl =
-            '<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">' +
-              '<div class="toast-header">' +
-                '<span class="bi-bell me-1"></span>' +
-                '<strong class="me-auto">%TITLE%</strong>' +
-                '<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="${close}"></button>' +
-              '</div>' +
-              '<div class="toast-body">' +
-                '<div class="d-flex align-items-center">' +
-                  '<div class="flex-shrink-0"><span class="%ICON% fs-4"></span></div>' +
-                  '<div class="flex-grow-1 ms-3">%MESSAGE%</div>' +
-                '</div>' +
-              '</div>' +
-            '</div>';
-        const toast = tmpl
-            .replace(/%TITLE%/, options.title || '${title}')
-            .replace(/%ICON%/, icon)
-            .replace(/%MESSAGE%/, message)
-        ;
-        if (typeof self.container == 'undefined') {
-            self.container = $('<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>').appendTo(document.body);
-        }
-        const el = $(toast).appendTo(self.container);
-        const t = new bootstrap.Toast(el[0]);
-        t.show();
-        return t;
-    },
     notify: function(message, options) {
         const self = this;
-        if (!self.useToast && self.supported()) {
-            self.notifyNotification(message, options);
+        if (typeof self.notifyMessage === 'function') {
+            self.notifyMessage(message, options);
         } else {
-            self.notifyToast(message, options);
+            if (self.supported()) {
+                self.notifyNotification(message, options);
+            } else {
+                alert(message);
+            }
         }
     },
     init: function() {
         const self = this;
-        if (typeof $.notify == 'undefined') {
+        if (typeof $.notify === 'undefined') {
             $.notify = self.notify.bind(self);
         }
     }
-});
+}, true);
 `;
     }
 
