@@ -63,9 +63,9 @@ $.define('notif', {
                 '<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="${close}"></button>' +
               '</div>' +
               '<div class="toast-body">' +
-                '<div class="d-flex align-items-center">' +
+                '<div class="d-flex flex-row">' +
                   '<div class="flex-shrink-0"><span class="%ICON% fs-4"></span></div>' +
-                  '<div class="flex-grow-1 ms-3">%MESSAGE%</div>' +
+                  '<div class="flex-grow-1 ms-3 align-self-center">%MESSAGE%</div>' +
                 '</div>' +
               '</div>' +
             '</div>';
