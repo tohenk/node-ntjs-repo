@@ -117,14 +117,6 @@ $.define('notif', {
         this.addLast(`$.notif.init();`);
     }
 
-    static getUseToast() {
-        return this.useToast ? true : false;
-    }
-
-    static setUseToast(value) {
-        this.useToast = value;
-    }
-
     static instance() {
         return new this();
     }

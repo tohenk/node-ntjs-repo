@@ -70,23 +70,23 @@ $.define('ntdlg', {
     BTN_ICON_CLOSE: null,
     dialogTmpl:
         '<div id="%ID%" class="modal fade" tabindex="-1" aria-labelledby="%ID%-title">' +
-          '<div class="%MODAL%">' +
-            '<div class="modal-content">' +
-              '<div class="modal-header">' +
-                '<h5 id="%ID%-title" class="modal-title">%TITLE%</h5>' +
-                '%CLOSE%' +
-              '</div>' +
-              '<div class="modal-body">%CONTENT%</div>' +
-              '<div class="modal-footer">%BUTTONS%</div>' +
-            '</div>' +
-          '</div>' +
+        '  <div class="%MODAL%">' +
+        '    <div class="modal-content">' +
+        '      <div class="modal-header">' +
+        '        <h5 id="%ID%-title" class="modal-title">%TITLE%</h5>' +
+        '        %CLOSE%' +
+        '      </div>' +
+        '      <div class="modal-body">%CONTENT%</div>' +
+        '      <div class="modal-footer">%BUTTONS%</div>' +
+        '    </div>' +
+        '  </div>' +
         '</div>',
     iconTmpl:
         '<span class="dialog-icon %ICON%"></span>',
     messageTmpl:
         '<div class="d-flex flex-row">' +
-          '<div class="flex-shrink-0 px-2">%ICON%</div>' +
-          '<div class="flex-grow-1 ms-3 align-self-center">%MESSAGE%</div>' +
+        '  <div class="flex-shrink-0 px-2">%ICON%</div>' +
+        '  <div class="flex-grow-1 ms-3 align-self-center">%MESSAGE%</div>' +
         '</div>',
     buttonClass:
         'btn btn-outline-%TYPE%',

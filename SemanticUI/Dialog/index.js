@@ -47,9 +47,9 @@ $.define('ntdlg', {
     ICON_INPUT: 'edit icon',
     dialogTmpl:
         '<div id="%ID%" class="ui %MODAL% modal">' +
-            '<div class="header">%TITLE%</div>' +
-            '<div class="image content">%CONTENT%</div>' +
-            '<div class="actions">%BUTTONS%</div>' +
+        '  <div class="header">%TITLE%</div>' +
+        '  <div class="image content">%CONTENT%</div>' +
+        '  <div class="actions">%BUTTONS%</div>' +
         '</div>',
     iconTmpl:
         '<i class="big %ICON%"></i>',

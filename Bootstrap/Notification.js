@@ -57,25 +57,25 @@ $.define('notif', {
         }
         const tmpl =
             '<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">' +
-              '<div class="toast-header">' +
-                '<span class="bi-bell me-1"></span>' +
-                '<strong class="me-auto">%TITLE%</strong>' +
-                '<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="${close}"></button>' +
-              '</div>' +
-              '<div class="toast-body">' +
-                '<div class="d-flex flex-row">' +
-                  '<div class="flex-shrink-0"><span class="%ICON% fs-4"></span></div>' +
-                  '<div class="flex-grow-1 ms-3 align-self-center">%MESSAGE%</div>' +
-                '</div>' +
-              '</div>' +
+            '  <div class="toast-header">' +
+            '    <span class="bi-bell me-1"></span>' +
+            '    <strong class="me-auto">%TITLE%</strong>' +
+            '    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="${close}"></button>' +
+            '  </div>' +
+            '  <div class="toast-body">' +
+            '    <div class="d-flex flex-row">' +
+            '      <div class="flex-shrink-0"><span class="%ICON% fs-4"></span></div>' +
+            '      <div class="flex-grow-1 ms-3 align-self-center">%MESSAGE%</div>' +
+            '    </div>' +
+            '  </div>' +
             '</div>';
         const toast = tmpl
             .replace(/%TITLE%/, options.title || self.title)
             .replace(/%ICON%/, icon)
             .replace(/%MESSAGE%/, message)
         ;
-        if (typeof self.container == 'undefined') {
-            self.container = $('<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>').appendTo(document.body);
+        if (typeof self.container === 'undefined') {
+            self.container = $('<div class="notification-container position-fixed bottom-0 end-0 p-3"></div>').appendTo(document.body);
         }
         const el = $(toast).appendTo(self.container);
         const t = new bootstrap.Toast(el[0]);

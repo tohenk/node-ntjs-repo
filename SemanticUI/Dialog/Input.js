@@ -47,10 +47,10 @@ $.define('ntdlg', {
         icon = icon || $.ntdlg.ICON_INPUT;
         message =
             '<form class="ui container form">' +
-                '<div class="field">' +
-                    '<label>' + message + '</label>' +
-                    '<input type="text" value="' + value + '">' +
-                '</div>' +
+            '  <div class="field">' +
+            '    <label>' + message + '</label>' +
+            '    <input type="text" value="' + value + '">' +
+            '  </div>' +
             '</form>';
         const dlg = $.ntdlg.dialog(id, title, message, icon, {
             'okay': {
