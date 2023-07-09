@@ -54,19 +54,19 @@ $.define('ntdlg', {
                     const spinner = $.ntdlg.spinnerTmpl;
                     const content =
                         '<div id="' + self.id + '" class="modal fade" tabindex="-1">' +
-                          '<div class="modal-dialog modal-dialog-centered">' +
-                            '<div class="modal-content">' +
-                              '<div class="modal-header">${title}</div>' +
-                              '<div class="modal-body">' +
-                                '<div class="d-flex">' +
-                                  '<div class="flex-shrink-0 icon">' + spinner + '</div>' +
-                                  '<div class="flex-grow-1 ms-3">' +
-                                    '<div class="msg">${message}</div>' +
-                                  '</div>' +
-                                '</div>' +
-                              '</div>' +
-                            '</div>' +
-                          '</div>' +
+                        '  <div class="modal-dialog modal-dialog-centered">' +
+                        '    <div class="modal-content">' +
+                        '      <div class="modal-header">${title}</div>' +
+                        '      <div class="modal-body">' +
+                        '        <div class="d-flex">' +
+                        '          <div class="flex-shrink-0 icon">' + spinner + '</div>' +
+                        '          <div class="flex-grow-1 ms-3">' +
+                        '            <div class="msg">${message}</div>' +
+                        '          </div>' +
+                        '        </div>' +
+                        '      </div>' +
+                        '   </div>' +
+                        '  </div>' +
                         '</div>';
                     $(document.body).append(content);
                     dlg = $('#' + self.id);
