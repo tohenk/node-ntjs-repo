@@ -199,6 +199,11 @@ $.define('ntdlg', {
                 let focused = dlg.find('input.focused');
                 if (focused.length) {
                     focused.focus();
+                } else {
+                    const buttons = dlg.find('.modal-footer button.btn');
+                    if (buttons.length) {
+                        buttons.first().focus();
+                    }
                 }
             },
             'hidden.bs.modal': function(e) {
