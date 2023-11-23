@@ -679,7 +679,7 @@ class CDN {
         this.tags.forEach(marker => {
             const tagged = marker.substr(0, 1) + tag + marker.substr(marker.length > 1 ? 1 : 0, 1);
             if (str.indexOf(tagged) >= 0) {
-                str = str.replace(tagged + (value && value.toString().length ? '' : '/'), value);
+                str = str.replace(tagged + (value && value.toString().length ? '' : '/'), value !== null ? value : '');
             }
         });
         return str;
