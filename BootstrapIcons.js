@@ -29,7 +29,7 @@ class BootstrapIcons extends Script {
     initialize() {
         this.name = 'BootstrapIcons';
         this.assetPath = 'bootstrap-icons';
-        this.addAsset(ScriptAsset.STYLESHEET, 'bootstrap-icons');
+        this.addAsset(ScriptAsset.STYLESHEET, 'font');
     }
 
     static instance() {

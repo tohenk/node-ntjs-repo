@@ -114,9 +114,11 @@ class ScriptManager {
      */
     getContent() {
         const result = [];
-        for (let repo in this.repositories) {
-            let content = this.repositories[repo].getContent();
-            if (content) result.push(content);
+        for (const repo in this.repositories) {
+            const content = this.repositories[repo].getContent();
+            if (content) {
+                result.push(content);
+            }
         }
         return result.join(ScriptManager.EOL);
     }
@@ -149,7 +151,7 @@ class ScriptManager {
         const scriptName = name.replace(/\//, path.sep);
         let scriptFilename = scriptCaches[scriptName];
         if (!scriptFilename) {
-            ScriptManager.dirs.forEach((dir) => {
+            ScriptManager.dirs.forEach(dir => {
                 [
                     path.join(dir, scriptName + '.js'),
                     path.join(dir, scriptName, 'index.js'),
@@ -246,35 +248,52 @@ class ScriptManager {
      * @returns {ScriptManager}
      */
     static parseCdn(cdns) {
+        const providers = {};
         Object.keys(cdns).forEach(repo => {
-            let parameters = cdns[repo];
-            let enabled = true;
-            if (typeof parameters.disabled != 'undefined' && parameters.disabled) {
-                enabled = false;
-            }
-            if (enabled) {
-                let cdn = ScriptManager.addCdn(repo);
-                if (parameters.url) cdn.url = parameters.url;
-                if (parameters.version) cdn.version = parameters.version;
-                [ScriptAsset.JAVASCRIPT, ScriptAsset.STYLESHEET].forEach(asset => {
-                    if (parameters.paths && parameters.paths[asset]) {
-                        cdn.setPath(asset, parameters.paths[asset]);
-                    }
-                    if (parameters[asset]) {
-                        let assets = parameters[asset];
-                        Object.keys(assets).forEach(name => {
-                            switch (asset) {
-                                case ScriptAsset.JAVASCRIPT:
-                                    cdn.addJs(name, assets[name]);
-                                    break;
-                                case ScriptAsset.STYLESHEET:
-                                    cdn.addCss(name, assets[name]);
-                                    break;
+            const parameters = cdns[repo];
+            if (repo === '') {
+                Object.assign(providers, parameters);
+            } else {
+                let enabled = true;
+                if (typeof parameters.disabled != 'undefined' && parameters.disabled) {
+                    enabled = false;
+                }
+                if (enabled) {
+                    const cdn = ScriptManager.addCdn(repo);
+                    if (parameters.url) {
+                        cdn.url = parameters.url;
+                    } else {
+                        Object.keys(providers).forEach(provider => {
+                            if (typeof parameters[provider] !== 'undefined') {
+                                cdn.pkg = parameters[provider] ? parameters[provider] : repo;
+                                cdn.url = providers[provider];
+                                return true;
                             }
                         });
                     }
-                });
-                debug('CDN parsed: %s', cdn);
+                    if (parameters.version) {
+                        cdn.version = parameters.version;
+                    }
+                    [ScriptAsset.JAVASCRIPT, ScriptAsset.STYLESHEET].forEach(asset => {
+                        if (parameters.paths && parameters.paths[asset]) {
+                            cdn.setPath(asset, parameters.paths[asset]);
+                        }
+                        if (parameters[asset]) {
+                            const assets = parameters[asset];
+                            Object.keys(assets).forEach(name => {
+                                switch (asset) {
+                                    case ScriptAsset.JAVASCRIPT:
+                                        cdn.addJs(name, assets[name]);
+                                        break;
+                                    case ScriptAsset.STYLESHEET:
+                                        cdn.addCss(name, assets[name]);
+                                        break;
+                                }
+                            });
+                        }
+                    });
+                    debug('CDN parsed: %s', cdn);
+                }
             }
         });
         return ScriptManager;
@@ -506,23 +525,27 @@ class ScriptAsset {
     }
 
     getDir(type) {
-        let result = [];
-        let dir = this.getPath(type);
-        if (this.name) result.push(this.name);
-        if (dir) result.push(dir);
+        const result = [];
+        const dir = this.getPath(type);
+        if (this.name) {
+            result.push(this.name);
+        }
+        if (dir) {
+            result.push(dir);
+        }
         return result.join('/');
     }
 
     generate(asset, type) {
         let result;
         if (this.isLocal(asset)) {
-            let cdn = ScriptManager.getCdn(this.alias ? this.alias : this.name);
+            const cdn = ScriptManager.getCdn(this.alias ? this.alias : this.name);
             if (cdn) {
                 result = cdn.get(type, asset, this.getPath(type));
             }
             if (!result) {
-                let p = [];
-                let dir = this.getDir(type);
+                const p = [];
+                const dir = this.getDir(type);
                 if (this.cdn) {
                     p.push(ScriptManager.CDN);
                 }
@@ -531,7 +554,9 @@ class ScriptAsset {
                 }
                 p.push(asset);
                 result = p.join('/');
-                if ('/' != result.substring(0, 1)) result = '/' + result;
+                if ('/' != result.substring(0, 1)) {
+                    result = '/' + result;
+                }
             }
         } else {
             result = asset;
@@ -561,11 +586,13 @@ class ScriptAsset {
 class CDN {
 
     repo = null
+    pkg = null
     url = null
     version = null
     paths = {}
     js = {}
     css = {}
+    tags = ['%', '<>']
 
     /**
      * Constructor.
@@ -648,23 +675,30 @@ class CDN {
         }
     }
 
+    replaceTag(str, tag, value) {
+        this.tags.forEach(marker => {
+            const tagged = marker.substr(0, 1) + tag + marker.substr(marker.length > 1 ? 1 : 0, 1);
+            if (str.indexOf(tagged) >= 0) {
+                str = str.replace(tagged + (value && value.toString().length ? '' : '/'), value);
+            }
+        });
+        return str;
+    }
+
+    replacePackage(str) {
+        return this.replaceTag(str, 'PKG', this.pkg);
+    }
+
     replaceVersion(str) {
-        if (null == this.version) {
-            return str.replace(/%VER%\//g, '');
-        }
-        return str.replace(/%VER%/g, this.version);
+        return this.replaceTag(str, 'VER', this.version);
     }
 
     replacePath(str, asset, path = null) {
-        let p = this.paths[asset] ? this.paths[asset] : path;
-        if (null == p) {
-            return str.replace(/%TYPE%\//g, '');
-        }
-        return str.replace(/%TYPE%/g, p);
+        return this.replaceTag(str, 'TYPE', this.paths[asset] ? this.paths[asset] : path);
     }
 
     replaceName(str, name) {
-        return str.replace(/%NAME%/g, name);
+        return this.replaceTag(str, 'NAME', name);
     }
 
     get(asset, name, path) {
@@ -679,7 +713,7 @@ class CDN {
         }
         if (file) {
             file = this.replaceVersion(file);
-            cdn = this.url;
+            cdn = this.replacePackage(this.url);
             cdn = this.replacePath(cdn, asset, path);
             cdn = this.replaceVersion(cdn);
             cdn = this.replaceName(cdn, file);
@@ -746,8 +780,8 @@ class Script {
     }
 
     includeAssets() {
-        for (let asset in this.assets) {
-            let data = this.assets[asset];
+        for (const asset in this.assets) {
+            const data = this.assets[asset];
             switch (data.type) {
                 case ScriptAsset.JAVASCRIPT:
                     this.useJavascript(data.name, data.asset, data.priority);
@@ -761,7 +795,7 @@ class Script {
     }
 
     includeScript() {
-        let script = this.getScript();
+        const script = this.getScript();
         if (script) {
             this.add(script);
         }
