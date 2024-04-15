@@ -96,6 +96,24 @@ $.define('ntdlg', {
         '<button id="%ID%" type="button" class="%BTNCLASS%">%CAPTION%</button>',
     closeTmpl:
         '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="$close"></button>',
+    title: function(t) {
+        let _icon, _title;
+        if (t && t.title) {
+            _title = t.title;
+            if (t.icon) {
+                _icon = t.icon;
+            }
+        } else {
+            _title = t;
+        }
+        if (_icon) {
+            _icon = typeof $.ntdlg.createIcon === 'function' ? $.ntdlg.createIcon(_icon) :
+                \`<span class="\${_icon}"></span>\`;
+        } else if ($.ntdlg.defaultIcon) {
+            _icon = $.ntdlg.defaultIcon;
+        }
+        return _icon ? _icon + ' ' + _title : _title;
+    },
     create: function(id, title, message, options) {
         const self = this;
         const dlg_id = '#' + id;
@@ -113,13 +131,13 @@ $.define('ntdlg', {
                 let caption, btnType, btnIcon, handler;
                 if ($.isArray(v) || $.isPlainObject(v)) {
                     caption = v.caption ? v.caption : k;
-                    btnType = v.type ? v.type : (0 == cnt ? 'primary' : 'secondary');
+                    btnType = v.type ? v.type : (0 === cnt ? 'primary' : 'secondary');
                     if (v.icon) btnIcon = v.icon;
-                    handler = typeof v.handler == 'function' ? v.handler : null;
+                    handler = typeof v.handler === 'function' ? v.handler : null;
                 } else {
                     caption = k;
-                    btnType = 0 == cnt ? 'primary' : 'secondary';
-                    handler = typeof v == 'function' ? v : null;
+                    btnType = 0 === cnt ? 'primary' : 'secondary';
+                    handler = typeof v === 'function' ? v : null;
                 }
                 let btnid = id + '_btn_' + caption.replace(/\W+/g, "-").toLowerCase();
                 let btnclass = $.util.template(self.buttonClass, {TYPE: btnType});
@@ -131,7 +149,7 @@ $.define('ntdlg', {
                     BTNCLASS: btnclass,
                     CAPTION: caption
                 }));
-                if (typeof handler == 'function') {
+                if (typeof handler === 'function') {
                     handlers.push({id: btnid, handler: handler});
                 }
                 cnt++;
@@ -141,7 +159,7 @@ $.define('ntdlg', {
         if (options.size) m.push('modal-' + options.size);
         const content = $.util.template(self.dialogTmpl, {
             ID: id,
-            TITLE: title,
+            TITLE: self.title(title),
             MODAL: m.join(' '),
             CLOSE: closable ? self.closeTmpl : '',
             BUTTONS: buttons.join(''),
@@ -162,7 +180,7 @@ $.define('ntdlg', {
             d.addClass(movedDlg);
             d.appendTo($(document.body));
         }
-        if (buttons.length == 0) {
+        if (buttons.length === 0) {
             dlg.find('.modal-footer').hide();
         }
         $.each(handlers, function(k, v) {
@@ -178,7 +196,7 @@ $.define('ntdlg', {
         $.util.applyEvent(dlg, events, options);
         // compatibility with JQuery UI dialog
         $.each({open: 'shown.bs.modal', close: 'hidden.bs.modal'}, function(prop, event) {
-            if (typeof options[prop] == 'function') {
+            if (typeof options[prop] === 'function') {
                 dlg.on(event, options[prop]);
             }
         });
@@ -208,7 +226,7 @@ $.define('ntdlg', {
             },
             'hidden.bs.modal': function(e) {
                 e.preventDefault();
-                if (typeof close_cb == 'function') {
+                if (typeof close_cb === 'function') {
                     close_cb();
                 }
             },
@@ -220,7 +238,7 @@ $.define('ntdlg', {
     show: function(dlg) {
         const self = this;
         if (dlg && !this.isVisible(dlg)) {
-            if (typeof dlg == 'string') {
+            if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
             }
             let d = self._get(dlg[0]);
@@ -233,7 +251,7 @@ $.define('ntdlg', {
     close: function(dlg) {
         const self = this;
         if (dlg) {
-            if (typeof dlg == 'string') {
+            if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
             }
             const d = self._get(dlg[0]);
@@ -242,7 +260,7 @@ $.define('ntdlg', {
     },
     isVisible: function(dlg) {
         if (dlg) {
-            if (typeof dlg == 'string') {
+            if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
             }
             if (dlg.length) {
@@ -255,7 +273,7 @@ $.define('ntdlg', {
     },
     getBody: function(dlg) {
         if (dlg) {
-            if (typeof dlg == 'string') {
+            if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
             }
             return dlg.find('.modal-body:first');
@@ -273,7 +291,7 @@ $.define('ntdlg', {
         // https://stackoverflow.com/questions/19305821/multiple-modals-overlay
         // fix z-index
         const p = bootstrap.Modal.prototype;
-        if (typeof p.__showElement == 'undefined') {
+        if (p.__showElement === undefined) {
             p.__showElement = p._showElement;
             p._showElement = function(relatedTarget) {
                 this.__showElement(relatedTarget);
@@ -290,7 +308,7 @@ $.define('ntdlg', {
             }
         }
         // re-add modal-open class if there're still opened modal
-        if (typeof p.__resetAdjustments == 'undefined') {
+        if (p.__resetAdjustments === undefined) {
             p.__resetAdjustments = p._resetAdjustments;
             p._resetAdjustments = function() {
                 this.__resetAdjustments();
@@ -305,7 +323,7 @@ $.define('ntdlg', {
     }
 
     getInitScript() {
-        this.addLast(`$.ntdlg.init()`);
+        this.addLast(`$.ntdlg.init();`);
     }
 
     static instance() {
