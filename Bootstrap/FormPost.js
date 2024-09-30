@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2021 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -42,33 +42,33 @@ class FormPost extends JQueryFormPost {
 
         return {
             showSuccessMessage: Stringify.raw(`function(title, message, opts) {
-  const autoclose = typeof opts.autoClose !== 'undefined' ? opts.autoClose : false;
-  const withokay = typeof opts.withOkay !== 'undefined' ? opts.withOkay : true;
-  const buttons = {};
-  if (withokay && !autoclose) {
-    buttons['${ok}'] = {
-      icon: $.ntdlg.BTN_ICON_OK,
-      handler: function() {
-        $.ntdlg.close($(this));
-      }
+    const autoclose = opts.autoClose !== undefined ? opts.autoClose : false;
+    const withokay = opts.withOkay !== undefined ? opts.withOkay : true;
+    const buttons = {};
+    if (withokay && !autoclose) {
+        buttons['${ok}'] = {
+            icon: $.ntdlg.BTN_ICON_OK,
+            handler: function() {
+                $.ntdlg.close($(this));
+            }
+        }
     }
-  }
-  const dlg = $.ntdlg.dialog('form_post_success', title, message, $.ntdlg.ICON_SUCCESS, buttons);
-  if (autoclose) {
-    dlg.on('shown.bs.modal', function() {
-      $.ntdlg.close($(this));
-    });
-  }
+    const dlg = $.ntdlg.dialog('form_post_success', title, message, $.ntdlg.ICON_SUCCESS, buttons);
+    if (autoclose) {
+        dlg.on('shown.bs.modal', function() {
+            $.ntdlg.close($(this));
+        });
+    }
 }`),
             showErrorMessage: Stringify.raw(`function(title, message, callback) {
-  $.ntdlg.dialog('form_post_error', title, message, $.ntdlg.ICON_ERROR, {
-    '${ok}': {
-      icon: $.ntdlg.BTN_ICON_OK,
-      handler: function() {
-        $.ntdlg.close($(this));
-      }
-    }
-  }, callback);
+    $.ntdlg.dialog('form_post_error', title, message, $.ntdlg.ICON_ERROR, {
+        '${ok}': {
+            icon: $.ntdlg.BTN_ICON_OK,
+            handler: function() {
+                $.ntdlg.close($(this));
+            }
+        }
+    }, callback);
 }`),
         }
     }
@@ -83,52 +83,56 @@ class FormPost extends JQueryFormPost {
             listClass: 'list-unstyled mb-0',
             visibilityUseClass: true,
             inplace: Stringify.raw(`function(el, error) {
-  if (el.hasClass('alert-danger')) {
-    el.html(error);
-  } else {
-    let tt = el;
-    const f = function(x, a, p) {
-      const errDisp = x.attr(a);
-      if (errDisp) {
-        const xel = p ? x.parents(errDisp) : x.siblings(errDisp);
-        if (xel.length) {
-          return xel;
-        }
-      }
-    }
-    let xel = f(tt, 'data-err-display');
-    if (!xel) xel = f(tt, 'data-err-display-parent', true);
-    if (xel) tt = xel;
-    // don't add tooltip on hidden input
-    if (tt.is('input[type="hidden"]')) {
-      tt = tt.siblings('input');
-    }
-    let tooltip = bootstrap.Tooltip.getInstance(tt[0]);
-    if (tooltip) {
-      tooltip._config.title = error;
+    if (el.hasClass('alert-danger')) {
+        el.html(error);
     } else {
-      tooltip = new bootstrap.Tooltip(tt[0], {title: error, placement: 'right'});
+        let tt = el;
+        const f = function(x, a, p) {
+            const errDisp = x.attr(a);
+            if (errDisp) {
+                const xel = p ? x.parents(errDisp) : x.siblings(errDisp);
+                if (xel.length) {
+                    return xel;
+                }
+            }
+        }
+        let xel = f(tt, 'data-err-display');
+        if (!xel) {
+            xel = f(tt, 'data-err-display-parent', true);
+        }
+        if (xel) {
+            tt = xel;
+        }
+        // don't add tooltip on hidden input
+        if (tt.is('input[type="hidden"]')) {
+            tt = tt.siblings('input');
+        }
+        let tooltip = bootstrap.Tooltip.getInstance(tt[0]);
+        if (tooltip) {
+            tooltip._config.title = error;
+        } else {
+            tooltip = new bootstrap.Tooltip(tt[0], {title: error, placement: 'right'});
+        }
+        xel = f(el, 'data-err-target');
+        el = xel ? xel : tt;
+        el.data('err-tt', tt);
     }
-    xel = f(el, 'data-err-target');
-    el = xel ? xel : tt;
-    el.data('err-tt', tt);
-  }
-  return el;
+    return el;
 }`),
             onErrReset: Stringify.raw(`function(helper) {
-  if (helper.container) {
-    helper.container.find('.' + helper.errClass).each(function() {
-      const el = $(this);
-      const tt = el.data('err-tt');
-      if (tt) {
-        const tooltip = bootstrap.Tooltip.getInstance(tt[0]);
-        if (tooltip) {
-          tooltip._config.title = '';
-        }
-      }
-      el.removeClass(helper.errClass);
-    });
-  }
+    if (helper.container) {
+        helper.container.find('.' + helper.errClass).each(function() {
+            const el = $(this);
+            const tt = el.data('err-tt');
+            if (tt) {
+                const tooltip = bootstrap.Tooltip.getInstance(tt[0]);
+                if (tooltip) {
+                    tooltip._config.title = '';
+                }
+            }
+            el.removeClass(helper.errClass);
+        });
+    }
 }`),
         }
     }

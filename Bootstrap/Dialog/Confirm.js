@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -43,7 +43,7 @@ class Confirm extends JQuery {
         return `
 $.define('ntdlg', {
     confirm: function(id, title, message, icon, cb_yes, cb_no) {
-        if (typeof icon == 'function') {
+        if (typeof icon === 'function') {
             cb_no = cb_yes;
             cb_yes = icon;
             icon = undefined;
@@ -54,7 +54,7 @@ $.define('ntdlg', {
                 icon: $.ntdlg.BTN_ICON_OK,
                 handler: function() {
                     $.ntdlg.close($(this));
-                    if (typeof cb_yes == 'function') {
+                    if (typeof cb_yes === 'function') {
                         cb_yes();
                     }
                 }
@@ -63,7 +63,7 @@ $.define('ntdlg', {
                 icon: $.ntdlg.BTN_ICON_CANCEL,
                 handler: function() {
                     $.ntdlg.close($(this));
-                    if (typeof cb_no == 'function') {
+                    if (typeof cb_no === 'function') {
                         cb_no();
                     }
                 }

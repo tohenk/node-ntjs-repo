@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -50,14 +50,14 @@ $.loader = function(container, options) {
                 .done(function(json) {
                     if (json.items) {
                         self.add(json.items);
-                        if (typeof json.count !== 'undefined') {
+                        if (json.count !== undefined) {
                             self.buildInfo(json.items, json.count);
                         }
                     }
                     if (json.pages && json.pages.length) {
                         self.buildNav(json.pages);
                     }
-                    if (typeof options.loaded == 'function') {
+                    if (typeof options.loaded === 'function') {
                         options.loaded.call(self, json);
                     }
                 });
@@ -66,7 +66,9 @@ $.loader = function(container, options) {
             const self = this;
             items = $.isArray(items) ? items : [items];
             let tbody = self.container.find('tbody');
-            if (tbody.length) tbody.remove();
+            if (tbody.length) {
+                tbody.remove();
+            }
             $('<tbody></tbody>').appendTo(self.container);
             tbody = self.container.find('tbody');
             $.each(items, function(idx, item) {
@@ -98,7 +100,9 @@ $.loader = function(container, options) {
         buildNav: function(items) {
             const self = this;
             let tfoot = self.container.find('tfoot');
-            if (tfoot.length) tfoot.remove();
+            if (tfoot.length) {
+                tfoot.remove();
+            }
             $('<tfoot></tfoot>').appendTo(self.container);
             tfoot = self.container.find('tfoot');
             const menus = [];
@@ -108,12 +112,12 @@ $.loader = function(container, options) {
                         '<i class="%ICON%"></i></a>', {PAGE: item.page, ICON: item.icon}));
                 } else {
                     menus.push($.util.template('<a class="%CLASS%" data-page="%PAGE%">%PAGE%</a>', {
-                        CLASS: 'item' + (item.page == self.page ? ' active' : ''),
+                        CLASS: 'item' + (item.page === self.page ? ' active' : ''),
                         PAGE: item.page
                     }));
                 }
             });
-            if (self.column == 0) {
+            if (self.column === 0) {
                 self.column = self.container.find('thead tr th').length;
             }
             $('<tr><th colspan="' + self.column + '">' +

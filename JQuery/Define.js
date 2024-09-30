@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -62,7 +62,9 @@ if (!$.define) {
             return true;
         },
         define: function(ns, o, e) {
-            if (!e && $.namespace.has(ns)) return;
+            if (!e && $.namespace.has(ns)) {
+                return;
+            }
             $.extend($.namespace.create(ns), o);
         }
     }

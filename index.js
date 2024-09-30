@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -47,7 +47,7 @@ class ScriptManager {
     create(name) {
         if (!this.scripts[name]) {
             debug(`Load script ${name}`);
-            const script = ScriptManager.require(name);
+            const script = this.require(name);
             this.scripts[name] = script.instance()
                 .setManager(this)
                 .doInitialize();
@@ -56,6 +56,16 @@ class ScriptManager {
             throw new Error(`Script ${name} can't be located.`);
         }
         return this.scripts[name];
+    }
+
+    /**
+     * Require script file.
+     *
+     * @param {string} name Script name
+     * @returns {object}
+     */
+    require(name) {
+        return ScriptManager.require(name);
     }
 
     /**
@@ -145,7 +155,7 @@ class ScriptManager {
      * Require script file.
      *
      * @param {string} name 
-     * @returns {any}
+     * @returns {object}
      */
     static require(name) {
         const scriptName = name.replace(/\//, path.sep);
@@ -155,13 +165,15 @@ class ScriptManager {
                 [
                     path.join(dir, scriptName + '.js'),
                     path.join(dir, scriptName, 'index.js'),
-                ].forEach((scriptFile) => {
+                ].forEach(scriptFile => {
                     if (fs.existsSync(scriptFile)) {
                         scriptFilename = scriptFile;
                         return true;
                     }
                 });
-                if (scriptFilename) return true;
+                if (scriptFilename) {
+                    return true;
+                }
             });
         }
         if (!scriptFilename) {
@@ -170,6 +182,36 @@ class ScriptManager {
         debug(`Script ${name} loaded from ${scriptFilename}`);
         scriptCaches[scriptName] = scriptFilename;
         return require(scriptFilename);
+    }
+
+    /**
+     * Get script alias from file path.
+     *
+     * @param {string} scriptFilename Script file name
+     * @returns {string}
+     */
+    static getAlias(scriptFilename) {
+        scriptFilename = scriptFilename.replace(/\\/, '/');
+        ScriptManager.dirs.forEach(dir => {
+            dir = dir.replace(/\\/, '/');
+            if (scriptFilename.substr(0, dir.length) === dir) {
+                scriptFilename = scriptFilename.substr(dir.length);
+                if (scriptFilename.substr(0, 1) === '/') {
+                    scriptFilename = scriptFilename.substr(1);
+                }
+                return true;
+            }
+        });
+        if (scriptFilename.substr(-8) === 'index.js') {
+            scriptFilename = scriptFilename.substr(0, scriptFilename.length - 8);
+        }
+        if (scriptFilename.substr(-3) === '.js') {
+            scriptFilename = scriptFilename.substr(0, scriptFilename.length - 3);
+        }
+        if (scriptFilename.substr(-1) === '/') {
+            scriptFilename = scriptFilename.substr(0, scriptFilename.length - 1);
+        }
+        return scriptFilename;
     }
 
     /**
@@ -255,7 +297,7 @@ class ScriptManager {
                 Object.assign(providers, parameters);
             } else {
                 let enabled = true;
-                if (typeof parameters.disabled != 'undefined' && parameters.disabled) {
+                if (parameters.disabled !== undefined && parameters.disabled) {
                     enabled = false;
                 }
                 if (enabled) {
@@ -264,7 +306,7 @@ class ScriptManager {
                         cdn.url = parameters.url;
                     } else {
                         Object.keys(providers).forEach(provider => {
-                            if (typeof parameters[provider] !== 'undefined') {
+                            if (parameters[provider] !== undefined) {
                                 cdn.pkg = parameters[provider] ? parameters[provider] : repo;
                                 cdn.url = providers[provider];
                                 return true;
@@ -409,13 +451,16 @@ class ScriptRepository {
     }
 
     toString() {
+        if (typeof this.onInit === 'function') {
+            this.onInit(this);
+        }
         const eol = ScriptManager.EOL;
         const result = [];
         [
             ScriptRepository.POSITION_FIRST,
             ScriptRepository.POSITION_MIDDLE,
             ScriptRepository.POSITION_LAST
-        ].forEach((position) => {
+        ].forEach(position => {
             if (this.scripts[position]) {
                 result.push(...this.scripts[position]);
             }
@@ -492,7 +537,7 @@ class ScriptAsset {
         }
         if (this.manager.assets[type].indexOf(asset) < 0) {
             priority = priority || ScriptAsset.PRIORITY_DEFAULT;
-            if (priority == ScriptAsset.PRIORITY_FIRST) {
+            if (priority === ScriptAsset.PRIORITY_FIRST) {
                 this.manager.assets[type].unshift(asset);
             } else {
                 this.manager.assets[type].push(asset);
@@ -521,7 +566,7 @@ class ScriptAsset {
     }
 
     isLocal(asset) {
-        return null == asset.match(/(^http(s)*\:)*\/\/(.*)/) ? true : false;
+        return null === asset.match(/(^http(s)*\:)*\/\/(.*)/) ? true : false;
     }
 
     getDir(type) {
@@ -825,13 +870,14 @@ class Script {
             if (!repo) {
                 repo = new ScriptRepository(repository);
                 this.manager.repositories[repository] = repo;
-                this.initRepository(repo);
+                if (typeof this.initRepository === 'function') {
+                    repo.onInit = () => {
+                        this.initRepository(repo);
+                    }
+                }
             }
             return repo;
         }
-    }
-
-    initRepository(repository) {
     }
 
     getScript() {
@@ -899,13 +945,28 @@ class Script {
         }
         return message;
     }
+
+    static getOption(key, defaultValue = null) {
+        if (this.options === undefined) {
+            this.options = {};
+        }
+        return this.options[key] !== undefined ? this.options[key] : defaultValue;
+    }
+
+    static setOption(key, value) {
+        if (this.options === undefined) {
+            this.options = {};
+        }
+        this.options[key] = value;
+        return this;
+    }
 }
 
 ScriptManager.addDir(__dirname);
 
 module.exports = {
-    Script: Script,
-    ScriptAsset: ScriptAsset,
-    ScriptRepository: ScriptRepository,
-    ScriptManager: ScriptManager,
+    Script,
+    ScriptAsset,
+    ScriptRepository,
+    ScriptManager,
 }

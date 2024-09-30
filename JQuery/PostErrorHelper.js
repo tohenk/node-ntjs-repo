@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -39,7 +39,7 @@ class PostErrorHelper extends JQuery {
     getScript() {
         const err = 'Error';
         return `
-$.errformat = {REPLACE: 0, INPLACE: 1, ASLIST: 2}
+$.errformat = {REPLACE: 0, INPLACE: 1, ASLIST: 2};
 $.errhelper = function(container, options) {
     const helper = {
         container: null,
@@ -123,7 +123,7 @@ $.errhelper = function(container, options) {
                     break;
                 case $.errformat.INPLACE:
                     error = self.getError(err, null, ', ');
-                    if (typeof self.inplace == 'function') {
+                    if (typeof self.inplace === 'function') {
                         let iel = self.inplace(el, error);
                         self.addErrorClass(iel);
                         self.showError(iel);
@@ -150,7 +150,7 @@ $.errhelper = function(container, options) {
                 // check if error element is exist
                 if (el.length) {
                     handled = true;
-                    helper.addError(err[1], helper.errorFormat == $.errformat.ASLIST ? el.parent() : el, helper.errorFormat);
+                    helper.addError(err[1], helper.errorFormat === $.errformat.ASLIST ? el.parent() : el, helper.errorFormat);
                     if (helper.parentClass) {
                         if (helper.parentSelector) {
                             el.parents(helper.parentSelector).addClass(helper.parentClass).show();
@@ -158,7 +158,7 @@ $.errhelper = function(container, options) {
                             el.parent().addClass(helper.parentClass).show();
                         }
                     }
-                    if (helper.focused == null) {
+                    if (helper.focused === null) {
                         if (el.is('input[type="hidden"]')) {
                             helper.focused = el.siblings('input');
                         } else {
@@ -214,7 +214,7 @@ $.errhelper = function(container, options) {
                     self.doShow(self.errorContainer, false);
                 }
             }
-            if (typeof self.onErrReset == 'function') {
+            if (typeof self.onErrReset === 'function') {
                 self.onErrReset(self);
             }
         }
@@ -223,14 +223,16 @@ $.errhelper = function(container, options) {
     options = options ? options : {};
     $.util.applyProp(['errorContainer', 'errorFormat', 'requiredSelector', 'parentSelector', 'parentClass',
         'errClass', 'listClass', 'toggleClass', 'visibilityUseClass', 'inplace', 'onErrReset'], options, helper);
-    if (typeof helper.errorContainer == 'string' && helper.container) {
+    if (typeof helper.errorContainer === 'string' && helper.container) {
         let p = helper.container;
-        let containers = helper.errorContainer.split(' ');
-        let items = [];
+        const containers = helper.errorContainer.split(' ');
+        const items = [];
         while (true) {
-            if (containers.length == 0) break;
-            let selector = containers.shift();
-            let el = p.find(selector);
+            if (containers.length === 0) {
+                break;
+            }
+            const selector = containers.shift();
+            const el = p.find(selector);
             if (el.length) {
                 p = el;
                 items.push(el);

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -65,7 +65,7 @@ $.ajaxhelper = function(el) {
             self.el.data(self.dataKey, xhr);
         }
     }
-    if (typeof el == 'string') {
+    if (typeof el === 'string') {
         helper.el = $(el);
     } else {
         helper.el = el;

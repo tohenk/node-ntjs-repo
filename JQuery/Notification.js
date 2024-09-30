@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -41,13 +41,13 @@ $.define('notif', {
     title: '${title}',
     supported: function() {
         const self = this;
-        if (typeof $.notif.allowed === 'undefined') {
+        if ($.notif.allowed === undefined) {
             let allowed = false;
             // https://developer.mozilla.org/en/docs/Web/API/notification
-            if (window.Notification && Notification.permission !== "denied") {
-                if (Notification.permission !== "granted") {
+            if (window.Notification && Notification.permission !== 'denied') {
+                if (Notification.permission !== 'granted') {
                     Notification.requestPermission(function(permission) {
-                        if (permission == "granted") {
+                        if (permission === 'granted') {
                             allowed = true;
                         }
                     });
@@ -105,7 +105,7 @@ $.define('notif', {
     },
     init: function() {
         const self = this;
-        if (typeof $.notify === 'undefined') {
+        if ($.notify === undefined) {
             $.notify = self.notify.bind(self);
         }
     }

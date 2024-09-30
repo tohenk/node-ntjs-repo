@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -43,10 +43,10 @@ class Input extends JQuery {
         return `
 $.define('ntdlg', {
     input: function(id, title, message, value, size, icon, callback) {
-        if (typeof size == 'function') {
+        if (typeof size === 'function') {
             callback = size;
             size = null;
-        } else if (typeof icon == 'function') {
+        } else if (typeof icon === 'function') {
             callback = icon;
             icon = null;
         }
@@ -59,7 +59,7 @@ $.define('ntdlg', {
                 handler: function() {
                     const dlg = $(this);
                     $.ntdlg.close(dlg);
-                    if (typeof callback == 'function') {
+                    if (typeof callback === 'function') {
                         const v = dlg.find('input[type=text]').val();
                         callback(v);
                     }

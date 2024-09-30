@@ -1,6 +1,6 @@
 {
   "name": "@ntlab/ntjs",
-  "version": "2.1.11",
+  "version": "2.2.0",
   "description": "Node Javascript repository",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/tohenk/node-ntjs#readme",
   "dependencies": {
-    "debug": "^4.3.4"
+    "debug": "^4.3.7"
   }
 }

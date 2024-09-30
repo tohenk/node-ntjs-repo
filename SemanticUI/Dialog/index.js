@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -62,12 +62,12 @@ $.define('ntdlg', {
         const self = this;
         const dlg_id = '#' + id;
         $(dlg_id).remove();
-        if ($.ntdlg.moved && typeof $.ntdlg.moved.refs[id] != 'undefined') {
+        if ($.ntdlg.moved && $.ntdlg.moved.refs[id] !== undefined) {
             $('div.' + $.ntdlg.moved.refs[id]).remove();
             delete $.ntdlg.moved.refs[id];
         }
         const modal = {
-            closable: typeof options.closable != 'undefined' ? options.closable : true
+            closable: options.closable !== undefined ? options.closable : true
         }
         const buttons = [];
         const handlers = [];
@@ -77,14 +77,14 @@ $.define('ntdlg', {
         if (options.buttons) {
             $.each(options.buttons, function(k, v) {
                 let caption, btnType, handler;
-                if (typeof v == 'object') {
+                if (typeof v === 'object') {
                     caption = v.caption ? v.caption : k;
                     btnType = v.type ? v.type : 'secondary';
-                    handler = typeof v.handler == 'function' ? v.handler : null;
+                    handler = typeof v.handler === 'function' ? v.handler : null;
                 } else {
                     caption = k;
-                    btnType = 0 == cnt ? 'primary' : 'secondary';
-                    handler = typeof v == 'function' ? v : null;
+                    btnType = 0 === cnt ? 'primary' : 'secondary';
+                    handler = typeof v === 'function' ? v : null;
                 }
                 const btnid = id + '_btn_' + k.replace(/\W+/g, "-").toLowerCase();
                 buttons.push($.util.template(self.buttonTmpl, {
@@ -112,16 +112,16 @@ $.define('ntdlg', {
                         });
                     }
                 }
-                if (typeof handler == 'function') {
+                if (typeof handler === 'function') {
                     handlers.push({id: btnid, handler: handler});
                 }
                 cnt++;
             });
         }
-        if (typeof options.show == 'function') {
+        if (typeof options.show === 'function') {
             modal.onShow = options.show;
         }
-        if (typeof options.hide == 'function') {
+        if (typeof options.hide === 'function') {
             modal.onHidden = options.hide;
         }
         const content = $.util.template(self.dialogTmpl, {
@@ -146,7 +146,7 @@ $.define('ntdlg', {
             d.addClass(movedDlg);
             d.appendTo($(document.body));
         }
-        if (buttons.length == 0) {
+        if (buttons.length === 0) {
             dlg.find('.actions').hide();
         }
         $.each(handlers, function(k, v) {
@@ -160,7 +160,7 @@ $.define('ntdlg', {
     },
     show: function(dlg) {
         if (dlg && !this.isVisible(dlg)) {
-            if (typeof dlg == 'string') {
+            if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
             }
             dlg.modal('show');
@@ -168,7 +168,7 @@ $.define('ntdlg', {
     },
     close: function(dlg) {
         if (dlg) {
-            if (typeof dlg == 'string') {
+            if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
             }
             dlg.modal('hide');
@@ -176,7 +176,7 @@ $.define('ntdlg', {
     },
     isVisible: function(dlg) {
         if (dlg) {
-            if (typeof dlg == 'string') {
+            if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
             }
             if (dlg.length) {
@@ -189,7 +189,7 @@ $.define('ntdlg', {
     },
     getBody: function(dlg) {
         if (dlg) {
-            if (typeof dlg == 'string') {
+            if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
             }
             return dlg.find('.content:first');
@@ -207,7 +207,7 @@ $.define('ntdlg', {
             closable: false,
             buttons: buttons,
             hide: function() {
-                if (typeof close_cb == 'function') {
+                if (typeof close_cb === 'function') {
                     close_cb();
                 }
             }

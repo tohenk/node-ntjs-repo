@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -118,11 +118,11 @@ $.define('ntdlg', {
         const self = this;
         const dlg_id = '#' + id;
         $(dlg_id).remove();
-        if ($.ntdlg.moved && typeof $.ntdlg.moved.refs[id] != 'undefined') {
+        if ($.ntdlg.moved && $.ntdlg.moved.refs[id] !== undefined) {
             $('div.' + $.ntdlg.moved.refs[id]).remove();
             delete $.ntdlg.moved.refs[id];
         }
-        const closable = typeof options.closable != 'undefined' ? options.closable : true;
+        const closable = options.closable !== undefined ? options.closable : true;
         const buttons = [];
         const handlers = [];
         let cnt = 0;
@@ -132,15 +132,17 @@ $.define('ntdlg', {
                 if ($.isArray(v) || $.isPlainObject(v)) {
                     caption = v.caption ? v.caption : k;
                     btnType = v.type ? v.type : (0 === cnt ? 'primary' : 'secondary');
-                    if (v.icon) btnIcon = v.icon;
+                    if (v.icon) {
+                        btnIcon = v.icon;
+                    }
                     handler = typeof v.handler === 'function' ? v.handler : null;
                 } else {
                     caption = k;
                     btnType = 0 === cnt ? 'primary' : 'secondary';
                     handler = typeof v === 'function' ? v : null;
                 }
-                let btnid = id + '_btn_' + caption.replace(/\W+/g, "-").toLowerCase();
-                let btnclass = $.util.template(self.buttonClass, {TYPE: btnType});
+                const btnid = id + '_btn_' + caption.replace(/\W+/g, "-").toLowerCase();
+                const btnclass = $.util.template(self.buttonClass, {TYPE: btnType});
                 if (btnIcon) {
                     caption = $.util.template(self.buttonIconTmpl, {CAPTION: caption, ICON: btnIcon});
                 }
@@ -156,7 +158,9 @@ $.define('ntdlg', {
             });
         }
         const m = ['modal-dialog', 'modal-dialog-centered'];
-        if (options.size) m.push('modal-' + options.size);
+        if (options.size) {
+            m.push('modal-' + options.size);
+        }
         const content = $.util.template(self.dialogTmpl, {
             ID: id,
             TITLE: self.title(title),
@@ -245,7 +249,9 @@ $.define('ntdlg', {
             if (!d) {
                 d = self._create(dlg[0]);
             }
-            if (d) d.show();
+            if (d) {
+                d.show();
+            }
         }
     },
     close: function(dlg) {
@@ -255,7 +261,9 @@ $.define('ntdlg', {
                 dlg = $('#' + dlg);
             }
             const d = self._get(dlg[0]);
-            if (d) d.hide();
+            if (d) {
+                d.hide();
+            }
         }
     },
     isVisible: function(dlg) {

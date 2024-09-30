@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -52,7 +52,7 @@ class FormPost extends JQuery {
         const error = this.translate('Error');
         const ok = this.translate('OK');
         const message = this.translate('Please wait while your data being saved.');
-        const redirDelay = FormPost.redirDelay ? FormPost.redirDelay : 0;
+        const redirDelay = FormPost.getOption('redir-delay', 0);
 
         return `
 $.formpost = function(form, options) {
@@ -233,8 +233,8 @@ $.formpost = function(form, options) {
             });
         },
         showSuccessMessage: function(title, message, opts) {
-            const autoclose = typeof opts.autoClose !== 'undefined' ? opts.autoClose : false;
-            const withokay = typeof opts.withOkay !== 'undefined' ? opts.withOkay : true;
+            const autoclose = opts.autoClose !== undefined ? opts.autoClose : false;
+            const withokay = opts.withOkay !== undefined ? opts.withOkay : true;
             const buttons = {};
             if (withokay && !autoclose) {
                 buttons['${ok}'] = function() {

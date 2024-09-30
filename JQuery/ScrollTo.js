@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -39,16 +39,16 @@ class ScrollTo extends JQuery {
     getScript() {
         return `
 $.scrollto = function(el) {
-    if (typeof el == 'string') {
+    if (typeof el === 'string') {
         el = $(el);
     }
     if (el.length) {
-        let top = el.offset().top;
-        let w = $(window);
-        let t = w.scrollTop();
-        let h = w.height();
+        const top = el.offset().top;
+        const w = $(window);
+        const t = w.scrollTop();
+        const h = w.height();
         if (top < t || top > t + h) {
-            let ptop = parseInt($(document.body).css('padding-top'));
+            const ptop = parseInt($(document.body).css('padding-top'));
             w.scrollTop(top - ptop);
         }
     }

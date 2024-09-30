@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -23,6 +23,7 @@
  */
 
 const { Script, ScriptAsset } = require('../index');
+const debug = require('debug')('script:JQuery');
 
 /**
  * JQuery script repository.
@@ -39,8 +40,10 @@ class JQuery extends Script {
     }
 
     initRepository(repository) {
-        repository.wrapSize = 2;
-        repository.wrapper = `
+        if (JQuery.getOption('xhr')) {
+            debug('Init repository for XHR');
+            repository.wrapSize = 2;
+            repository.wrapper = `
 (function($) {
     (function loader(f) {
         if (document.ntloader && !document.ntloader.isScriptLoaded()) {
@@ -50,9 +53,14 @@ class JQuery extends Script {
         } else {
             f($);
         }
-    })(function($) {%s
-    });
+    })(function($) {%s});
 })(jQuery);`;
+        } else {
+            debug('Init repository for normal request');
+            repository.wrapSize = 1;
+            repository.wrapper = `
+(function($) {%s})(jQuery);`;
+        }
     }
 
     static instance() {

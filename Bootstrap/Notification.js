@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -74,7 +74,7 @@ $.define('notif', {
             .replace(/%ICON%/, icon)
             .replace(/%MESSAGE%/, message)
         ;
-        if (typeof self.container === 'undefined') {
+        if (self.container === undefined) {
             self.container = $('<div class="notification-container position-fixed bottom-0 end-0 p-3"></div>').appendTo(document.body);
         }
         const el = $(toast).appendTo(self.container);

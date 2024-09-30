@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2023 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -47,7 +47,7 @@ $.define('util', {
         return tmpl;
     },
     copyProp: function(prop, src, dest, remove) {
-        if (typeof src[prop] != 'undefined') {
+        if (src[prop] !== undefined) {
             dest[prop] = src[prop];
             if (remove) {
                 delete src[prop];
@@ -57,10 +57,10 @@ $.define('util', {
     applyProp: function(props, src, dest, remove) {
         const self = this;
         if (src && dest) {
-            if (typeof props == 'object') {
+            if (typeof props === 'object') {
                 if ($.isArray(props)) {
                     for (let i = 0; i < props.length; i++) {
-                        let prop = props[i];
+                        const prop = props[i];
                         self.copyProp(prop, src, dest, remove);
                     }
                 } else {
@@ -72,16 +72,16 @@ $.define('util', {
         }
     },
     bindEvent: function(el, event, handlers) {
-        if (typeof handlers[event] == 'function') {
+        if (typeof handlers[event] === 'function') {
             el.on(event, handlers[event]);
         }
     },
     applyEvent: function(el, events, handlers) {
         const self = this;
-        if (typeof events == 'object') {
+        if (typeof events === 'object') {
             if ($.isArray(events)) {
                 for (let i = 0; i < events.length; i++) {
-                    let event = events[i];
+                    const event = events[i];
                     self.bindEvent(el, event, handlers);
                 }
             } else {
@@ -92,10 +92,12 @@ $.define('util', {
         }
     },
     dump: function(o, p) {
-        if (typeof o == 'object') {
-            for (a in o) $.util.dump(o[a], (p != undefined ? p + '.' : '') + a);
+        if (typeof o === 'object') {
+            for (const a in o) {
+                $.util.dump(o[a], (p !== undefined ? p + '.' : '') + a);
+            }
         } else {
-            alert((p != undefined ? p + ' = ' : '') + o);
+            alert((p !== undefined ? p + ' = ' : '') + o);
         }
     }
 });
