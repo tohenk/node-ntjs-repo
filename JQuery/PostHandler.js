@@ -41,14 +41,19 @@ class PostHandler extends JQuery {
 $.extend({
     handlePostData: function(data, errhelper, success_cb, error_cb) {
         $.postErr = null;
-        let json = typeof(data) === 'object' ? data : $.parseJSON(data);
+        const json = typeof(data) === 'object' ? data : $.parseJSON(data);
         if (json.success) {
             if (typeof success_cb === 'function') {
                 success_cb(json);
             }
         } else {
             if (json.error) {
-                $.map($.isArray(json.error) || $.isPlainObject(json.error) ? json.error : new Array(json.error), errhelper.handleError);
+                if (!Array.isArray(json.error)) {
+                    json.error = [json.error];
+                }
+                json.error.forEach(err => {
+                    errhelper.handleError(err);
+                });
             }
             if (typeof error_cb === 'function') {
                 error_cb(json);

@@ -40,8 +40,8 @@ class Util extends JQuery {
         return `
 $.define('util', {
     template: function(tmpl, replaces) {
-        for (let n in replaces) {
-            let re = new RegExp('%' + n + '%', 'g');
+        for (const n in replaces) {
+            const re = new RegExp('%' + n + '%', 'g');
             tmpl = tmpl.replace(re, replaces[n]);
         }
         return tmpl;
@@ -58,13 +58,13 @@ $.define('util', {
         const self = this;
         if (src && dest) {
             if (typeof props === 'object') {
-                if ($.isArray(props)) {
+                if (Array.isArray(props)) {
                     for (let i = 0; i < props.length; i++) {
                         const prop = props[i];
                         self.copyProp(prop, src, dest, remove);
                     }
                 } else {
-                    for (prop in props) {
+                    for (const prop in props) {
                         self.copyProp(prop, src, dest, remove);
                     }
                 }
@@ -79,7 +79,7 @@ $.define('util', {
     applyEvent: function(el, events, handlers) {
         const self = this;
         if (typeof events === 'object') {
-            if ($.isArray(events)) {
+            if (Array.isArray(events)) {
                 for (let i = 0; i < events.length; i++) {
                     const event = events[i];
                     self.bindEvent(el, event, handlers);

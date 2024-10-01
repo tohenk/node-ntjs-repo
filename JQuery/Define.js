@@ -65,7 +65,7 @@ if (!$.define) {
             if (!e && $.namespace.has(ns)) {
                 return;
             }
-            $.extend($.namespace.create(ns), o);
+            Object.assign($.namespace.create(ns), o);
         }
     }
     $.define = $.namespace.define;

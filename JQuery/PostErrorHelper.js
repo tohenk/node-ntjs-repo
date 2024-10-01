@@ -56,11 +56,14 @@ $.errhelper = function(container, options) {
         visibilityUseClass: false,
         getError: function(err, fmt, sep) {
             let error = '';
-            $.map($.isArray(err) ? err : new Array(err), function(e) {
+            if (!Array.isArray(err)) {
+                err = [err];
+            }
+            err.forEach(e => {
                 if (error.length && sep) {
                     error = error + sep;
                 }
-                e = $.isArray(e) ? e.join(': ') : e;
+                e = Array.isArray(e) ? e.join(': ') : e;
                 if (fmt) {
                     error = error + $.util.template(fmt, {error: e});
                 } else {
@@ -145,7 +148,7 @@ $.errhelper = function(container, options) {
         handleError: function(err) {
             let handled = false;
             // reference self using variable
-            if ($.isArray(err)) {
+            if (Array.isArray(err)) {
                 const el = $('#' + err[0]);
                 // check if error element is exist
                 if (el.length) {

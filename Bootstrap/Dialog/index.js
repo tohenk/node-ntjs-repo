@@ -127,9 +127,10 @@ $.define('ntdlg', {
         const handlers = [];
         let cnt = 0;
         if (options.buttons) {
-            $.each(options.buttons, function(k, v) {
+            Object.keys(options.buttons).forEach(k => {
+                const v = options.buttons[k];
                 let caption, btnType, btnIcon, handler;
-                if ($.isArray(v) || $.isPlainObject(v)) {
+                if (Array.isArray(v) || typeof v === 'object') {
                     caption = v.caption ? v.caption : k;
                     btnType = v.type ? v.type : (0 === cnt ? 'primary' : 'secondary');
                     if (v.icon) {
@@ -187,7 +188,7 @@ $.define('ntdlg', {
         if (buttons.length === 0) {
             dlg.find('.modal-footer').hide();
         }
-        $.each(handlers, function(k, v) {
+        Object.values(handlers).forEach(v => {
             $('#' + v.id).on('click', function(e) {
                 e.preventDefault();
                 v.handler.apply(dlg);
@@ -199,9 +200,11 @@ $.define('ntdlg', {
         $.util.applyProp(opts, options, modal_options);
         $.util.applyEvent(dlg, events, options);
         // compatibility with JQuery UI dialog
-        $.each({open: 'shown.bs.modal', close: 'hidden.bs.modal'}, function(prop, event) {
-            if (typeof options[prop] === 'function') {
-                dlg.on(event, options[prop]);
+        const deprecatedEvents = {open: 'shown.bs.modal', close: 'hidden.bs.modal'};
+        Object.keys(deprecatedEvents).forEach(event => {
+            const newEvent = deprecatedEvents[event];
+            if (typeof options[event] === 'function') {
+                dlg.on(newEvent, options[event]);
             }
         });
         self._create(dlg[0], modal_options);
@@ -295,7 +298,7 @@ $.define('ntdlg', {
     },
     init: function() {
         // icon set
-        $.extend(this, ${Stringify.from(icons, 2)});
+        Object.assign(this, ${Stringify.from(icons, 2)});
         // https://stackoverflow.com/questions/19305821/multiple-modals-overlay
         // fix z-index
         const p = bootstrap.Modal.prototype;

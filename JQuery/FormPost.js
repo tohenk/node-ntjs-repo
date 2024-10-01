@@ -99,7 +99,7 @@ $.formpost = function(form, options) {
                 params = form.serializeArray();
             }
             const xtra = form.data('submit');
-            if ($.isArray(xtra) && xtra.length) {
+            if (Array.isArray(xtra) && xtra.length) {
                 for (let i = 0; i < xtra.length; i++) {
                     params.push(xtra[i]);
                 }
@@ -256,7 +256,7 @@ $.formpost = function(form, options) {
             }, callback);
         }
     }
-    $.extend(fp, ${Stringify.from(this.getOverrides(), 1)});
+    Object.assign(fp, ${Stringify.from(this.getOverrides(), 1)});
     const props = ['message', 'progress', 'xhr', 'url', 'paramName', 'onsubmit', 'onconfirm'];
     $.util.applyProp(props, options, fp, true);
     fp.bind(form);

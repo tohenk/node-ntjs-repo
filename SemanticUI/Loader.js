@@ -64,14 +64,14 @@ $.loader = function(container, options) {
         },
         add: function(items) {
             const self = this;
-            items = $.isArray(items) ? items : [items];
+            items = Array.isArray(items) ? items : [items];
             let tbody = self.container.find('tbody');
             if (tbody.length) {
                 tbody.remove();
             }
             $('<tbody></tbody>').appendTo(self.container);
             tbody = self.container.find('tbody');
-            $.each(items, function(idx, item) {
+            items.forEach(item => {
                 const row = options.formatRow.call(self, item);
                 row.appendTo(tbody);
             });
@@ -82,13 +82,13 @@ $.loader = function(container, options) {
             if (title.length) {
                 switch (count) {
                     case 0:
-                        title.html('No result');
+                        title.html('${this.translate('No result')}');
                         break;
                     case 1:
-                        title.html('Showing one result');
+                        title.html('${this.translate('Showing one result')}');
                         break;
                     default:
-                        title.html($.util.template('Showing result from %FIRST% to %LAST% of %COUNT%', {
+                        title.html($.util.template('${this.translate('Showing result from %FIRST% to %LAST% of %COUNT%')}', {
                             FIRST: items[0].nr,
                             LAST: items[items.length - 1].nr,
                             COUNT: count
@@ -106,7 +106,7 @@ $.loader = function(container, options) {
             $('<tfoot></tfoot>').appendTo(self.container);
             tfoot = self.container.find('tfoot');
             const menus = [];
-            $.each(items, function(idx, item) {
+            items.forEach(item => {
                 if (item.icon) {
                     menus.push($.util.template('<a class="icon item" data-page="%PAGE%">' +
                         '<i class="%ICON%"></i></a>', {PAGE: item.page, ICON: item.icon}));
@@ -137,28 +137,11 @@ $.loader = function(container, options) {
             return icon;
         },
         icon: function(type) {
-            let icon;
-            switch (type) {
-                case 1:
-                    icon = this.iconOverlay('phone');
-                    break;
-                case 2:
-                    icon = this.iconOverlay('phone volume');
-                    break;
-                case 3:
-                    icon = this.iconOverlay('share square');
-                    break;
-                case 4:
-                    icon = this.iconOverlay('envelope');
-                    break;
-                case 5:
-                    icon = this.iconOverlay('bullhorn');
-                    break;
-                case 6:
-                    icon = this.iconOverlay('bell');
-                    break;
+            type = --type;
+            const icons = ['phone', 'voicemail', 'paper plane', 'envelope', 'bullhorn', 'bell'];
+            if (type >= 0 && type < icons.length) {
+                return this.iconOverlay(icons[type]);
             }
-            return icon;
         }
     }
     return loader;

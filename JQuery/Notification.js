@@ -86,7 +86,9 @@ $.define('notif', {
         }
         const title = options.title || self.title;
         const content = {body: message};
-        if (options.icon) content.icon = options.icon;
+        if (options.icon) {
+            content.icon = options.icon;
+        }
         const n = new Notification(title, content);
         setTimeout(n.close.bind(n), options.delay || 5000);
         return n; 

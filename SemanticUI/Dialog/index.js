@@ -75,7 +75,8 @@ $.define('ntdlg', {
         const nope = ['deny', 'negative', 'cancel'];
         let cnt = 0;
         if (options.buttons) {
-            $.each(options.buttons, function(k, v) {
+            Object.keys(options.buttons).forEach(k => {
+                const v = options.buttons[k];
                 let caption, btnType, handler;
                 if (typeof v === 'object') {
                     caption = v.caption ? v.caption : k;
@@ -94,7 +95,7 @@ $.define('ntdlg', {
                 }));
                 if (handler) {
                     if (!modal.onApprove) {
-                        $.each(okay, function(i, v) {
+                        okay.forEach(v => {
                             if (btnType.indexOf(v) >= 0) {
                                 modal.onApprove = handler;
                                 handler = null;
@@ -103,7 +104,7 @@ $.define('ntdlg', {
                         });
                     }
                     if (!modal.onDeny) {
-                        $.each(nope, function(i, v) {
+                        nope.forEach(v => {
                             if (btnType.indexOf(v) >= 0) {
                                 modal.onDeny = handler;
                                 handler = null;
@@ -149,7 +150,7 @@ $.define('ntdlg', {
         if (buttons.length === 0) {
             dlg.find('.actions').hide();
         }
-        $.each(handlers, function(k, v) {
+        Object.values(handlers).forEach(v => {
             $('#' + v.id).on('click', function(e) {
                 e.preventDefault();
                 v.handler.apply(dlg);
