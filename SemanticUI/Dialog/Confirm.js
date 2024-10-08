@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../../index');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
 const JQuery = ScriptManager.require('JQuery');
 
 /**
- * SemanticUI/Dialog/Message script repository.
+ * SemanticUI/Dialog/Confirm script repository.
  */
-class Message extends JQuery {
+class Confirm extends JQuery {
 
     initialize() {
-        this.name = 'Message';
+        this.name = 'Confirm';
         this.position = ScriptRepository.POSITION_FIRST;
         this.addDependencies(['SemanticUI/Dialog']);
     }
@@ -39,13 +39,33 @@ class Message extends JQuery {
     getScript() {
         return `
 $.define('ntdlg', {
-    message: function(id, title, message, icon, cb) {
-        return $.ntdlg.dialog(id, title, message, icon, {
-            okay: {
+    confirm: function(id, title, message, icon, cb_yes, cb_no) {
+        if (typeof icon === 'function') {
+            cb_no = cb_yes;
+            cb_yes = icon;
+            icon = undefined;
+        }
+        icon = icon || $.ntdlg.ICON_QUESTION;
+        const dlg = $.ntdlg.dialog(id, title, message, icon, {
+            yes: {
                 type: 'green approve',
-                caption: '<i class="check icon"></i>${this.translate('Ok')}',
+                caption: '<i class="check icon"></i>${this.translate('Yes')}',
+                handler: function() {
+                    if (typeof cb_yes === 'function') {
+                        cb_yes();
+                    }
+                }
+            },
+            no: {
+                type: 'red deny',
+                caption: '<i class="times icon"></i>${this.translate('No')}',
+                handler: function() {
+                    if (typeof cb_no === 'function') {
+                        cb_no();
+                    }
+                }
             }
-        }, cb);
+        });
     }
 }, true);
 `;
@@ -56,4 +76,4 @@ $.define('ntdlg', {
     }
 }
 
-module.exports = Message;
+module.exports = Confirm;

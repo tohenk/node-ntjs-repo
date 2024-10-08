@@ -53,17 +53,17 @@ $.define('ntdlg', {
             '  </div>' +
             '</form>';
         const dlg = $.ntdlg.dialog(id, title, message, icon, {
-            'okay': {
+            okay: {
                 type: 'green approve',
-                caption: '<i class="check icon"></i>Ok',
+                caption: '<i class="check icon"></i>${this.translate('Ok')}',
                 handler: function() {
                     const v = dlg.find('input[type=text]').val();
                     return callback(v);
                 }
             },
-            'cancel': {
+            cancel: {
                 type: 'red deny',
-                caption: '<i class="times icon"></i>Cancel'
+                caption: '<i class="times icon"></i>${this.translate('Cancel')}'
             }
         });
     }

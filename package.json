@@ -1,6 +1,6 @@
 {
   "name": "@ntlab/ntjs",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Node Javascript repository",
   "main": "index.js",
   "scripts": {
