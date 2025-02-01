@@ -38,7 +38,7 @@ class PostHandler extends JQuery {
 
     getScript() {
         return `
-$.extend({
+Object.assign($, {
     handlePostData(data, errhelper, success_cb, error_cb) {
         $.postErr = null;
         const json = typeof(data) === 'object' ? data : $.parseJSON(data);
