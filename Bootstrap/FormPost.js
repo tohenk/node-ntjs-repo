@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../index');
-const { Stringify } = require('@ntlab/ntlib');
+const Stringify = require('@ntlab/ntlib/stringify');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
 const JQueryFormPost = ScriptManager.require('JQuery/FormPost');
 
 /**
@@ -48,7 +48,7 @@ class FormPost extends JQueryFormPost {
     if (withokay && !autoclose) {
         buttons['${ok}'] = {
             icon: $.ntdlg.BTN_ICON_OK,
-            handler: function() {
+            handler() {
                 $.ntdlg.close($(this));
             }
         }
@@ -64,7 +64,7 @@ class FormPost extends JQueryFormPost {
     $.ntdlg.dialog('form_post_error', title, message, $.ntdlg.ICON_ERROR, {
         '${ok}': {
             icon: $.ntdlg.BTN_ICON_OK,
-            handler: function() {
+            handler() {
                 $.ntdlg.close($(this));
             }
         }

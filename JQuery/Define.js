@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../index');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
 const JQuery = ScriptManager.require('JQuery');
 
 /**
@@ -41,7 +41,7 @@ class Define extends JQuery {
 if (!$.define) {
     'use strict';
     $.namespace = {
-        create: function(ns) {
+        create(ns) {
             let o = $;
             const p = ns.split('.');
             for (let i = 0; i < p.length; i++) {
@@ -50,7 +50,7 @@ if (!$.define) {
             }
             return o;
         },
-        has: function(ns) {
+        has(ns) {
             let o = $;
             const p = ns.split('.');
             for (let i = 0; i < p.length; i++) {
@@ -61,7 +61,7 @@ if (!$.define) {
             }
             return true;
         },
-        define: function(ns, o, e) {
+        define(ns, o, e) {
             if (!e && $.namespace.has(ns)) {
                 return;
             }

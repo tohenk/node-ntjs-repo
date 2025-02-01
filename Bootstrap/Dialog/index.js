@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2023-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../../index');
-const JQuery = ScriptManager.require('JQuery');
 const Stringify = require('@ntlab/ntlib/stringify');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
+const JQuery = ScriptManager.require('JQuery');
 
 /**
  * Bootstrap/Dialog script repository.
@@ -73,7 +73,7 @@ $.define('ntdlg', {
         '  <div class="%MODAL%">' +
         '    <div class="modal-content">' +
         '      <div class="modal-header">' +
-        '        <h5 id="%ID%-title" class="modal-title">%TITLE%</h5>' +
+        '        <h5 id="%ID%-title" class="modal-title text-truncate">%TITLE%</h5>' +
         '        %CLOSE%' +
         '      </div>' +
         '      <div class="modal-body">%CONTENT%</div>' +
@@ -96,7 +96,7 @@ $.define('ntdlg', {
         '<button id="%ID%" type="button" class="%BTNCLASS%">%CAPTION%</button>',
     closeTmpl:
         '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="$close"></button>',
-    title: function(t) {
+    title(t) {
         let _icon, _title;
         if (t && t.title) {
             _title = t.title;
@@ -114,7 +114,7 @@ $.define('ntdlg', {
         }
         return _icon ? _icon + ' ' + _title : _title;
     },
-    create: function(id, title, message, options) {
+    create(id, title, message, options) {
         const self = this;
         const dlg_id = '#' + id;
         $(dlg_id).remove();
@@ -210,7 +210,7 @@ $.define('ntdlg', {
         self._create(dlg[0], modal_options);
         return dlg;
     },
-    dialog: function(id, title, message, icon, buttons, close_cb) {
+    dialog(id, title, message, icon, buttons, close_cb) {
         const self = this;
         icon = icon || self.ICON_INFO;
         buttons = buttons || [];
@@ -219,7 +219,7 @@ $.define('ntdlg', {
             MESSAGE: message
         });
         const dlg = self.create(id, title, message, {
-            'shown.bs.modal': function(e) {
+            ['shown.bs.modal'](e) {
                 e.preventDefault();
                 let focused = dlg.find('input.focused');
                 if (focused.length) {
@@ -231,18 +231,18 @@ $.define('ntdlg', {
                     }
                 }
             },
-            'hidden.bs.modal': function(e) {
+            ['hidden.bs.modal'](e) {
                 e.preventDefault();
                 if (typeof close_cb === 'function') {
                     close_cb();
                 }
             },
-            buttons: buttons
+            buttons
         });
         $.ntdlg.show(dlg);
         return dlg;
     },
-    show: function(dlg) {
+    show(dlg) {
         const self = this;
         if (dlg && !this.isVisible(dlg)) {
             if (typeof dlg === 'string') {
@@ -257,7 +257,7 @@ $.define('ntdlg', {
             }
         }
     },
-    close: function(dlg) {
+    close(dlg) {
         const self = this;
         if (dlg) {
             if (typeof dlg === 'string') {
@@ -269,7 +269,7 @@ $.define('ntdlg', {
             }
         }
     },
-    isVisible: function(dlg) {
+    isVisible(dlg) {
         if (dlg) {
             if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
@@ -282,7 +282,7 @@ $.define('ntdlg', {
             return false;
         }
     },
-    getBody: function(dlg) {
+    getBody(dlg) {
         if (dlg) {
             if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
@@ -290,13 +290,13 @@ $.define('ntdlg', {
             return dlg.find('.modal-body:first');
         }
     },
-    _create: function(el, options) {
+    _create(el, options) {
         return new bootstrap.Modal(el, options || {});
     },
-    _get: function(el) {
+    _get(el) {
         return bootstrap.Modal.getInstance(el);
     },
-    init: function() {
+    init() {
         // icon set
         Object.assign(this, ${Stringify.from(icons, 2)});
         // https://stackoverflow.com/questions/19305821/multiple-modals-overlay

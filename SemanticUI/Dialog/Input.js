@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../../index');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
 const JQuery = ScriptManager.require('JQuery');
 
 /**
@@ -39,7 +39,7 @@ class Input extends JQuery {
     getScript() {
         return `
 $.define('ntdlg', {
-    input: function(id, title, message, value, icon, callback) {
+    input(id, title, message, value, icon, callback) {
         if (typeof icon === 'function') {
             callback = icon;
             icon = null;
@@ -56,7 +56,7 @@ $.define('ntdlg', {
             okay: {
                 type: 'green approve',
                 caption: '<i class="check icon"></i>${this.translate('Ok')}',
-                handler: function() {
+                handler() {
                     const v = dlg.find('input[type=text]').val();
                     return callback(v);
                 }

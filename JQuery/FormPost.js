@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../index');
-const JQuery = ScriptManager.require('JQuery');
 const Stringify = require('@ntlab/ntlib/stringify');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
+const JQuery = ScriptManager.require('JQuery');
 
 /**
  * JQuery/FormPost script repository.
@@ -69,7 +69,7 @@ $.formpost = function(form, options) {
         onerror: null,
         onalways: null,
         onconfirm: null,
-        hasRequired: function(form) {
+        hasRequired(form) {
             const self = this;
             let status = false;
             if (self.errhelper.requiredSelector) {
@@ -88,7 +88,7 @@ $.formpost = function(form, options) {
             }
             return status;
         },
-        formPost: function(form, url, success_cb, error_cb) {
+        formPost(form, url, success_cb, error_cb) {
             let params, request;
             form.trigger('formpost');
             if (fp.paramName) {
@@ -149,7 +149,7 @@ $.formpost = function(form, options) {
                 })
             ;
         },
-        bind: function(form) {
+        bind(form) {
             const self = this;
             const submitclicker = function(e) {
                 e.preventDefault();
@@ -232,7 +232,7 @@ $.formpost = function(form, options) {
                 }
             });
         },
-        showSuccessMessage: function(title, message, opts) {
+        showSuccessMessage(title, message, opts) {
             const autoclose = opts.autoClose !== undefined ? opts.autoClose : false;
             const withokay = opts.withOkay !== undefined ? opts.withOkay : true;
             const buttons = {};
@@ -248,9 +248,9 @@ $.formpost = function(form, options) {
                 });
             }
         },
-        showErrorMessage: function(title, message, callback) {
+        showErrorMessage(title, message, callback) {
             $.ntdlg.dialog('form_post_error', title, message, $.ntdlg.ICON_ERROR, {
-                '${ok}': function() {
+                ['${ok}']() {
                     $.ntdlg.close($(this));
                 }
             }, callback);

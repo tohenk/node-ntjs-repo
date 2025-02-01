@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { ScriptManager, ScriptRepository } = require('../index');
+const { ScriptManager, ScriptRepository } = require('@ntlab/ntjs');
 const JQuery = ScriptManager.require('JQuery');
 
 class Notification extends JQuery {
@@ -38,7 +38,7 @@ class Notification extends JQuery {
 
         return `
 $.define('notif', {
-    notifyMessage: function(message, options) {
+    notifyMessage(message, options) {
         const self = this;
         const data = {title: self.title, message: message};
         if (typeof options === 'string') {

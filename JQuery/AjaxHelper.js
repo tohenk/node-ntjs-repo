@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2023-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../index');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
 const JQuery = ScriptManager.require('JQuery');
 
 /**
@@ -42,7 +42,7 @@ $.ajaxhelper = function(el) {
     const helper = {
         el: null,
         dataKey: '_acxhr',
-        load: function(url, params, callback) {
+        load(url, params, callback) {
             const self = this;
             if (typeof params === 'function') {
                 callback = params;

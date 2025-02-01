@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../index');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
 const JQuery = ScriptManager.require('JQuery');
 
 /**
@@ -39,14 +39,14 @@ class Util extends JQuery {
     getScript() {
         return `
 $.define('util', {
-    template: function(tmpl, replaces) {
+    template(tmpl, replaces) {
         for (const n in replaces) {
             const re = new RegExp('%' + n + '%', 'g');
             tmpl = tmpl.replace(re, replaces[n]);
         }
         return tmpl;
     },
-    copyProp: function(prop, src, dest, remove) {
+    copyProp(prop, src, dest, remove) {
         if (src[prop] !== undefined) {
             dest[prop] = src[prop];
             if (remove) {
@@ -54,7 +54,7 @@ $.define('util', {
             }
         }
     },
-    applyProp: function(props, src, dest, remove) {
+    applyProp(props, src, dest, remove) {
         const self = this;
         if (src && dest) {
             if (typeof props === 'object') {
@@ -71,12 +71,12 @@ $.define('util', {
             }
         }
     },
-    bindEvent: function(el, event, handlers) {
+    bindEvent(el, event, handlers) {
         if (typeof handlers[event] === 'function') {
             el.on(event, handlers[event]);
         }
     },
-    applyEvent: function(el, events, handlers) {
+    applyEvent(el, events, handlers) {
         const self = this;
         if (typeof events === 'object') {
             if (Array.isArray(events)) {
@@ -91,7 +91,7 @@ $.define('util', {
             }
         }
     },
-    dump: function(o, p) {
+    dump(o, p) {
         if (typeof o === 'object') {
             for (const a in o) {
                 $.util.dump(o[a], (p !== undefined ? p + '.' : '') + a);

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../../index');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
 const JQuery = ScriptManager.require('SemanticUI');
 
 /**
@@ -58,7 +58,7 @@ $.define('ntdlg', {
         '<div class="description">%MESSAGE%</div>',
     buttonTmpl:
         '<div id="%ID%" class="ui %TYPE% button">%CAPTION%</div>',
-    create: function(id, title, message, options) {
+    create(id, title, message, options) {
         const self = this;
         const dlg_id = '#' + id;
         $(dlg_id).remove();
@@ -159,7 +159,7 @@ $.define('ntdlg', {
         dlg.modal(modal);
         return dlg;
     },
-    show: function(dlg) {
+    show(dlg) {
         if (dlg && !this.isVisible(dlg)) {
             if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
@@ -167,7 +167,7 @@ $.define('ntdlg', {
             dlg.modal('show');
         }
     },
-    close: function(dlg) {
+    close(dlg) {
         if (dlg) {
             if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
@@ -175,7 +175,7 @@ $.define('ntdlg', {
             dlg.modal('hide');
         }
     },
-    isVisible: function(dlg) {
+    isVisible(dlg) {
         if (dlg) {
             if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
@@ -188,7 +188,7 @@ $.define('ntdlg', {
             return false;
         }
     },
-    getBody: function(dlg) {
+    getBody(dlg) {
         if (dlg) {
             if (typeof dlg === 'string') {
                 dlg = $('#' + dlg);
@@ -196,7 +196,7 @@ $.define('ntdlg', {
             return dlg.find('.content:first');
         }
     },
-    dialog: function(id, title, message, icon, buttons, close_cb) {
+    dialog(id, title, message, icon, buttons, close_cb) {
         const self = this;
         icon = icon || self.ICON_INFO;
         buttons = buttons || [];
@@ -207,7 +207,7 @@ $.define('ntdlg', {
         const dlg = self.create(id, title, message, {
             closable: false,
             buttons: buttons,
-            hide: function() {
+            hide() {
                 if (typeof close_cb === 'function') {
                     close_cb();
                 }

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { ScriptManager, ScriptRepository } = require('./../index');
+const { ScriptManager, ScriptRepository } = require('@ntlab/ntjs');
 const JQuery = ScriptManager.require('JQuery');
 
 class Notification extends JQuery {
@@ -39,7 +39,7 @@ class Notification extends JQuery {
         return `
 $.define('notif', {
     title: '${title}',
-    supported: function() {
+    supported() {
         const self = this;
         if ($.notif.allowed === undefined) {
             let allowed = false;
@@ -59,7 +59,7 @@ $.define('notif', {
         }
         return $.notif.allowed;
     },
-    notifyNotification: function(message, options) {
+    notifyNotification(message, options) {
         const self = this;
         if (typeof options === 'string') {
             let icon;
@@ -93,7 +93,7 @@ $.define('notif', {
         setTimeout(n.close.bind(n), options.delay || 5000);
         return n; 
     },
-    notify: function(message, options) {
+    notify(message, options) {
         const self = this;
         if (typeof self.notifyMessage === 'function') {
             self.notifyMessage(message, options);
@@ -105,7 +105,7 @@ $.define('notif', {
             }
         }
     },
-    init: function() {
+    init() {
         const self = this;
         if ($.notify === undefined) {
             $.notify = self.notify.bind(self);

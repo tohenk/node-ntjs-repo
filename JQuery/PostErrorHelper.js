@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2023-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../index');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
 const JQuery = ScriptManager.require('JQuery');
 
 /**
@@ -54,7 +54,7 @@ $.errhelper = function(container, options) {
         inplace: null,
         focused: null,
         visibilityUseClass: false,
-        getError: function(err, fmt, sep) {
+        getError(err, fmt, sep) {
             let error = '';
             if (!Array.isArray(err)) {
                 err = [err];
@@ -72,7 +72,7 @@ $.errhelper = function(container, options) {
             });
             return error;
         },
-        doShow: function(el, show = true) {
+        doShow(el, show = true) {
             const self = this;
             if (self.visibilityUseClass && self.toggleClass) {
                 if (show) {
@@ -88,7 +88,7 @@ $.errhelper = function(container, options) {
                 }
             }
         },
-        showError: function(el) {
+        showError(el) {
             const self = this;
             self.doShow(el, true);
             if (self.toggleClass) {
@@ -96,7 +96,7 @@ $.errhelper = function(container, options) {
                 el.parents().removeClass(self.toggleClass);
             }
         },
-        addErrorClass: function(el) {
+        addErrorClass(el) {
             const self = this;
             if (self.errClass) {
                 if (el.is('input[type="hidden"]')) {
@@ -105,7 +105,7 @@ $.errhelper = function(container, options) {
                 el.addClass(self.errClass);
             }
         },
-        addError: function(err, el, errtype) {
+        addError(err, el, errtype) {
             const self = this;
             errtype = errtype ? errtype : $.errformat.REPLACE;
             if (Array.isArray(el)) {
@@ -145,7 +145,7 @@ $.errhelper = function(container, options) {
                     break;
             }
         },
-        handleError: function(err) {
+        handleError(err) {
             let handled = false;
             // reference self using variable
             if (Array.isArray(err)) {
@@ -185,14 +185,14 @@ $.errhelper = function(container, options) {
                 }
             }
         },
-        focusError: function() {
+        focusError() {
             const self = this;
             if (self.focused != null) {
                 $.scrollto(self.focused);
                 self.focused.focus();
             }
         },
-        resetError: function() {
+        resetError() {
             const self = this;
             self.focused = null;
             if (self.container) {

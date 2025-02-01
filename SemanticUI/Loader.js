@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../index');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
 const SemanticUI = ScriptManager.require('SemanticUI');
 
 /**
@@ -43,7 +43,7 @@ $.loader = function(container, options) {
         container: container,
         url: options.url,
         column: options.column || 0,
-        load: function(page) {
+        load(page) {
             const self = this;
             self.page = page || self.page || 1;
             $.get(self.url.replace(/PAGE/, self.page))
@@ -62,7 +62,7 @@ $.loader = function(container, options) {
                     }
                 });
         },
-        add: function(items) {
+        add(items) {
             const self = this;
             items = Array.isArray(items) ? items : [items];
             let tbody = self.container.find('tbody');
@@ -76,7 +76,7 @@ $.loader = function(container, options) {
                 row.appendTo(tbody);
             });
         },
-        buildInfo: function(items, count) {
+        buildInfo(items, count) {
             const self = this;
             const title = self.container.siblings('.x-title');
             if (title.length) {
@@ -97,7 +97,7 @@ $.loader = function(container, options) {
                 }
             }
         },
-        buildNav: function(items) {
+        buildNav(items) {
             const self = this;
             let tfoot = self.container.find('tfoot');
             if (tfoot.length) {
@@ -129,14 +129,14 @@ $.loader = function(container, options) {
                 self.load(page);
             });
         },
-        iconOverlay: function(icon, overlay) {
+        iconOverlay(icon, overlay) {
             icon = '<i class="' + icon + ' icon"></i>';
             if (overlay) {
                 icon = '<i class="icons">' + icon + '<i class="corner ' + overlay + ' icon"></i></i>'
             }
             return icon;
         },
-        icon: function(type) {
+        icon(type) {
             type = --type;
             const icons = ['phone', 'voicemail', 'paper plane', 'envelope', 'bullhorn', 'bell'];
             if (type >= 0 && type < icons.length) {

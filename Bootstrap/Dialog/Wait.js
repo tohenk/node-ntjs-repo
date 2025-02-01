@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2023-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2023-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../../index');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
 const JQuery = ScriptManager.require('JQuery');
 
 /**
@@ -44,7 +44,7 @@ class Wait extends JQuery {
 $.define('ntdlg', {
     waitdlg: {
         id: 'wdialog',
-        getDlg: function(create) {
+        getDlg(create) {
             const self = this;
             let dlg = $('#' + self.id);
             if (dlg.length) {
@@ -88,14 +88,14 @@ $.define('ntdlg', {
                 }
             }
         },
-        isActive: function() {
+        isActive() {
             const self = this;
             self.getDlg();
             if (self.dlg) {
                 return self.dlg.hasClass('show') ? true : false;
             }
         },
-        show: function(msg) {
+        show(msg) {
             const self = this;
             self.close();
             self.getDlg(true);
@@ -105,7 +105,7 @@ $.define('ntdlg', {
             self.dlg.removeClass('dismiss');
             $.ntdlg.show(self.dlg);
         },
-        close: function() {
+        close() {
             const self = this;
             self.getDlg();
             if (self.dlg) {
@@ -117,7 +117,7 @@ $.define('ntdlg', {
             }
         }
     },
-    wait: function(message) {
+    wait(message) {
         if (message) {
             $.ntdlg.waitdlg.show(message);
         } else {

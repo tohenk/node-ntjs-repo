@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2018-2024 Toha <tohenk@yahoo.com>
+ * Copyright (c) 2018-2025 Toha <tohenk@yahoo.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const { ScriptRepository, ScriptManager } = require('../../index');
+const { ScriptRepository, ScriptManager } = require('@ntlab/ntjs');
 const JQuery = ScriptManager.require('JQuery');
 
 /**
@@ -39,7 +39,7 @@ class Message extends JQuery {
     getScript() {
         return `
 $.define('ntdlg', {
-    message: function(id, title, message, icon, cb) {
+    message(id, title, message, icon, cb) {
         return $.ntdlg.dialog(id, title, message, icon, {
             okay: {
                 type: 'green approve',
